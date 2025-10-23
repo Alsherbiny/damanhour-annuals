@@ -1,0 +1,4084 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Annuals & Permissions</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        background-color: #f4f4f4;
+        margin: 0;
+        direction: rtl;
+        text-align: right;
+        transition: background-color 0.3s, color 0.3s;
+        color: #333;
+      }
+
+      footer {
+        text-align: center;
+        padding: 20px 0;
+        margin-top: 30px;
+        font-size: 12px;
+        color: #888;
+        direction: ltr;
+      }
+      body.dark-mode footer {
+        color: #aaa;
+      }
+
+      .page-center-container {
+        display: flex;
+        justify-content: center;
+        padding: 20px;
+      }
+
+      .main-wrapper {
+        display: flex;
+        gap: 20px;
+        width: 100%;
+        max-width: 1600px;
+        align-items: flex-start;
+      }
+
+      .container {
+        background: #fff;
+        padding: 30px;
+        border-radius: 8px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        flex: 2;
+        transition: background-color 0.3s, color 0.3s;
+      }
+
+      .summary-column {
+        background: #fff;
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        width: 300px;
+        transition: background-color 0.3s, color 0.3s;
+      }
+
+      .summary-column h3 {
+        text-align: center;
+        color: #333;
+        margin-top: 0;
+        padding-bottom: 10px;
+        border-bottom: 2px solid #ddd;
+        transition: color 0.3s, border-bottom-color 0.3s;
+      }
+
+      .summary-column h3.clickable-title {
+        cursor: pointer;
+        transition: color 0.2s;
+      }
+
+      .summary-column h3.clickable-title:hover {
+        color: #007bff;
+      }
+
+      body.dark-mode .summary-column h3.clickable-title:hover {
+        color: #4da6ff;
+      }
+
+      .summary-item {
+        padding: 10px;
+        border-bottom: 1px solid #eee;
+        margin-bottom: 10px;
+        transition: border-bottom-color 0.3s;
+      }
+
+      .summary-item:last-child {
+        border-bottom: none;
+        margin-bottom: 0;
+      }
+
+      .summary-item p {
+        margin: 0;
+        font-weight: bold;
+        color: #555;
+        transition: color 0.3s;
+      }
+
+      .summary-item p span {
+        color: #007bff;
+        transition: color 0.3s;
+      }
+
+      .summary-item ul {
+        list-style: none;
+        padding: 0;
+        margin-top: 5px;
+        font-size: 0.9em;
+        color: #777;
+        transition: color 0.3s;
+      }
+
+      .summary-item p.summary-employee-name {
+        cursor: pointer;
+        transition: color 0.2s;
+        display: inline-block;
+        width: 100%;
+      }
+
+      .summary-item p.summary-employee-name:hover {
+        color: #007bff !important;
+      }
+
+      .summary-item-footer {
+        text-align: center;
+        margin-top: 10px;
+      }
+
+      .summary-item-footer button {
+        background-color: #6c757d;
+        color: white;
+        border: none;
+        padding: 5px 10px;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 12px;
+        width: auto;
+      }
+
+      .progress-bar-container {
+        width: 100%;
+        background-color: #e9ecef;
+        border-radius: 4px;
+        margin-top: 8px;
+        height: 20px;
+        position: relative;
+        overflow: hidden;
+      }
+
+      .progress-bar-fill {
+        height: 100%;
+        border-radius: 4px;
+        transition: width 0.5s ease-in-out;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-size: 12px;
+        font-weight: bold;
+        text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.2);
+      }
+
+      .progress-bar-fill.high {
+        background-color: #28a745;
+      } /* Green */
+      .progress-bar-fill.medium {
+        background-color: #ffc107;
+      } /* Yellow */
+      .progress-bar-fill.low {
+        background-color: #dc3545;
+      } /* Red */
+
+      h1,
+      h2 {
+        color: #333;
+        text-align: center;
+        transition: color 0.3s;
+      }
+
+      #warningMessage,
+      #duplicateWarningMessage,
+      #successMessage,
+      #permissionLimitWarning,
+      #permissionSuccessMessage,
+      #permissionWarningMessage,
+      #passwordIncorrectMessage {
+        text-align: center;
+        padding: 10px;
+        margin-bottom: 20px;
+        border-radius: 5px;
+        display: none;
+      }
+
+      #warningMessage,
+      #permissionWarningMessage {
+        background-color: #ffeeba;
+        color: #856404;
+        border: 1px solid #ffc107;
+      }
+
+      #duplicateWarningMessage,
+      #permissionLimitWarning,
+      #passwordIncorrectMessage {
+        background-color: #f8d7da;
+        color: #721c24;
+        border: 1px solid #f5c6cb;
+      }
+
+      #successMessage,
+      #permissionSuccessMessage {
+        background-color: #d4edda;
+        color: #155724;
+        border: 1px solid #c3e6cb;
+      }
+
+      .form-container,
+      .table-container,
+      .actions-container,
+      .main-summary-container {
+        margin-bottom: 20px;
+        padding: 20px;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        background-color: #fafafa;
+        transition: background-color 0.3s, border-color 0.3s;
+      }
+
+      label {
+        display: block;
+        margin-bottom: 8px;
+        color: #555;
+        transition: color 0.3s;
+      }
+
+      .employee-select-container {
+        text-align: center;
+        margin-bottom: 20px;
+        padding: 20px;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        background-color: #f7f7f7;
+        transition: background-color 0.3s, border-color 0.3s;
+      }
+
+      #employeeSelect {
+        width: 80%;
+        padding: 10px;
+        font-size: 16px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        cursor: pointer;
+        text-align: right;
+        direction: rtl;
+        background-color: #fff;
+        transition: background-color 0.3s, border-color 0.3s, color 0.3s;
+      }
+
+      #employeeSelect option {
+        text-align: right;
+      }
+
+      input[type="text"],
+      input[type="date"],
+      select,
+      textarea,
+      input[type="password"] {
+        width: calc(100% - 22px);
+        padding: 10px;
+        margin-bottom: 15px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        background-color: #fff;
+        color: #333;
+        transition: background-color 0.3s, border-color 0.3s, color 0.3s;
+      }
+
+      .date-fields {
+        display: flex;
+        gap: 20px;
+      }
+
+      .date-fields div {
+        flex: 1;
+      }
+
+      textarea {
+        resize: vertical;
+      }
+
+      button {
+        background-color: #007bff;
+        color: white;
+        padding: 12px 20px;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 16px;
+        width: 100%;
+        transition: background-color 0.3s, color 0.3s;
+        margin-top: 5px;
+      }
+
+      .actions-container {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+      }
+
+      .actions-container button {
+        width: 100%;
+      }
+
+      @media (min-width: 600px) {
+        .actions-container {
+          flex-direction: row;
+          justify-content: space-between;
+        }
+        .actions-container button {
+          width: 48%;
+        }
+      }
+
+      .toggle-buttons {
+        display: flex;
+        gap: 10px;
+        margin-bottom: 20px;
+      }
+
+      .toggle-buttons button {
+        flex: 1;
+        background-color: #6c757d;
+      }
+
+      .toggle-buttons button.active {
+        background-color: #007bff;
+      }
+
+      button#importBtn {
+        background-color: #28a745;
+      }
+
+      button#importBtn:hover {
+        background-color: #218838;
+      }
+
+      button#exportBtn {
+        background-color: #17a2b8;
+      }
+
+      button#exportBtn:hover {
+        background-color: #138496;
+      }
+
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 20px;
+        table-layout: fixed;
+      }
+
+      th,
+      td {
+        border: 1px solid #ddd;
+        padding: 10px;
+        text-align: right;
+        overflow: hidden;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+        transition: background-color 0.3s, border-color 0.3s, color 0.3s;
+      }
+
+      th:nth-child(4),
+      td:nth-child(4) {
+        width: 20%;
+      }
+
+      th {
+        background-color: #f2f2f2;
+        color: #333;
+      }
+
+      td button {
+        background-color: #dc3545;
+        width: auto;
+        padding: 8px 12px;
+      }
+
+      td button:hover {
+        background-color: #c82333;
+      }
+
+      .message {
+        text-align: center;
+        margin-top: 15px;
+        font-weight: bold;
+      }
+
+      .error-message {
+        color: #dc3545;
+      }
+
+      .hidden-section {
+        display: none;
+      }
+
+      .main-summary-container {
+        margin-bottom: 20px;
+        padding: 20px;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        background-color: #fafafa;
+        transition: background-color 0.3s, border-color 0.3s;
+      }
+
+      .main-summary-content {
+        display: flex;
+        justify-content: space-around;
+        flex-wrap: wrap;
+        padding: 10px;
+        background-color: #f0f0f0;
+        border-radius: 5px;
+        margin-top: 10px;
+        gap: 15px;
+        transition: background-color 0.3s;
+      }
+
+      .main-summary-content p {
+        margin: 0;
+        font-size: 1.1em;
+        font-weight: bold;
+        color: #555;
+        transition: color 0.3s;
+      }
+
+      .main-summary-content span {
+        color: #007bff;
+        transition: color 0.3s;
+      }
+
+      .section-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 10px;
+      }
+
+      .section-header h3 {
+        margin: 0;
+      }
+
+      .small-action-btn {
+        padding: 5px 10px;
+        font-size: 12px;
+        background-color: #6c757d;
+        width: auto;
+        white-space: nowrap;
+      }
+
+      .small-action-btn:hover {
+        background-color: #5a6268;
+      }
+
+      #vacationListModal .modal-content {
+        max-width: 800px;
+      }
+
+      #vacationListModalContent table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 15px;
+      }
+
+      #vacationListModalContent th,
+      #vacationListModalContent td {
+        border: 1px solid #ddd;
+        padding: 8px;
+        text-align: right;
+      }
+
+      #vacationListModalContent th {
+        background-color: #f2f2f2;
+      }
+
+      .deduction-day {
+        background-color: #f8d7da !important;
+        color: #721c24 !important;
+        font-weight: bold;
+      }
+
+      .double-day {
+        background-color: #d7f8df !important;
+        color: #1c724e !important;
+        font-weight: bold;
+      }
+
+      .modal {
+        display: none;
+        position: fixed;
+        z-index: 1000;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        overflow: auto;
+        background-color: rgba(0, 0, 0, 0.4);
+      }
+
+      .modal-content {
+        background-color: #fefefe;
+        margin: 15% auto;
+        padding: 20px;
+        border: 1px solid #888;
+        width: 80%;
+        max-width: 500px;
+        border-radius: 8px;
+        box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2),
+          0 6px 20px 0 rgba(0, 0, 0, 0.19);
+        transition: background-color 0.3s, color 0.3s;
+      }
+
+      .modal-content p {
+        white-space: pre-wrap;
+        word-wrap: break-word;
+      }
+
+      .close-btn {
+        color: #aaa;
+        float: left;
+        font-size: 28px;
+        font-weight: bold;
+      }
+
+      .close-btn:hover,
+      .close-btn:focus {
+        color: black;
+        text-decoration: none;
+        cursor: pointer;
+      }
+
+      .view-comment-btn {
+        background-color: #2196f3;
+        color: white;
+        padding: 5px 10px;
+        border: none;
+        border-radius: 3px;
+        cursor: pointer;
+        font-size: 14px;
+      }
+
+      .view-comment-btn:hover {
+        background-color: #0b7dda;
+      }
+
+      .show-more-btn {
+        background-color: #6c757d;
+        width: auto;
+        margin-top: 10px;
+        padding: 10px 15px;
+      }
+
+      .show-more-btn:hover {
+        background-color: #5a6268;
+      }
+
+      .hours-buttons {
+        display: flex;
+        gap: 10px;
+        margin-bottom: 10px;
+      }
+
+      .hours-buttons button {
+        flex: 1;
+        padding: 8px;
+        font-size: 14px;
+        background-color: #009688;
+      }
+
+      .hours-buttons button:hover {
+        background-color: #00796b;
+      }
+
+      #permissionHours {
+        width: calc(100% - 32px); /* Adjusted for larger padding */
+        padding: 15px;
+        font-size: 18px;
+        text-align: center;
+        font-weight: bold;
+      }
+
+      .delete-permissions-dropdown {
+        position: relative;
+        display: inline-block;
+        text-align: left;
+        margin-bottom: 15px;
+        float: left;
+      }
+
+      .delete-permissions-btn {
+        background-color: #dc3545;
+        color: white;
+        border: none;
+        cursor: pointer;
+        padding: 10px 15px;
+        border-radius: 4px;
+        font-size: 14px;
+        width: auto;
+      }
+
+      .delete-permissions-btn:hover {
+        background-color: #c82333;
+      }
+
+      .dropdown-content {
+        display: none;
+        position: absolute;
+        background-color: #f9f9f9;
+        min-width: 220px;
+        box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
+        z-index: 1;
+        border-radius: 4px;
+        right: 0;
+        top: 100%;
+        margin-top: 5px;
+        transition: background-color 0.3s;
+      }
+
+      .dropdown-content button {
+        color: black;
+        padding: 12px 16px;
+        text-decoration: none;
+        display: block;
+        background-color: transparent;
+        border: none;
+        text-align: right;
+        font-size: 14px;
+        width: 100%;
+      }
+
+      .dropdown-content button:hover {
+        background-color: #f1f1f1;
+      }
+
+      .delete-permissions-dropdown.active .dropdown-content {
+        display: block;
+      }
+
+      /* Dark Mode Styles */
+      body.dark-mode {
+        background-color: #121212;
+        color: #e0e0e0;
+      }
+
+      body.dark-mode .container,
+      body.dark-mode .summary-column {
+        background-color: #1e1e1e;
+        box-shadow: 0 0 10px rgba(255, 255, 255, 0.1);
+      }
+
+      body.dark-mode .summary-column h3,
+      body.dark-mode h1,
+      body.dark-mode h2 {
+        color: #fff;
+      }
+
+      body.dark-mode .summary-column h3 {
+        border-bottom-color: #444;
+      }
+
+      body.dark-mode .summary-item {
+        border-bottom-color: #333;
+      }
+
+      body.dark-mode .summary-item p {
+        color: #bbb;
+      }
+
+      body.dark-mode .summary-item p span {
+        color: #4da6ff;
+      }
+
+      body.dark-mode .summary-item ul {
+        color: #999;
+      }
+
+      body.dark-mode .summary-item p.summary-employee-name:hover {
+        color: #4da6ff !important;
+      }
+
+      body.dark-mode .summary-item-footer button {
+        background-color: #5a6268;
+      }
+
+      body.dark-mode .progress-bar-container {
+        background-color: #495057;
+      }
+
+      body.dark-mode .form-container,
+      body.dark-mode .table-container,
+      body.dark-mode .actions-container,
+      body.dark-mode .main-summary-container,
+      body.dark-mode .employee-select-container {
+        background-color: #2a2a2a;
+        border-color: #333;
+      }
+
+      body.dark-mode label {
+        color: #e0e0e0;
+      }
+
+      body.dark-mode #employeeSelect,
+      body.dark-mode input[type="text"],
+      body.dark-mode input[type="date"],
+      body.dark-mode select,
+      body.dark-mode textarea,
+      body.dark-mode input[type="password"] {
+        background-color: #333;
+        border-color: #555;
+        color: #fff;
+      }
+
+      body.dark-mode input[type="date"]::-webkit-calendar-picker-indicator {
+        filter: invert(1);
+      }
+
+      body.dark-mode button {
+        color: #fff;
+      }
+
+      body.dark-mode .actions-container button#importBtn {
+        background-color: #388e3c;
+      }
+
+      body.dark-mode .actions-container button#exportBtn {
+        background-color: #00796b;
+      }
+
+      body.dark-mode th {
+        background-color: #333;
+        color: #fff;
+        border-color: #444;
+      }
+
+      body.dark-mode td {
+        background-color: #2a2a2a;
+        color: #e0e0e0;
+        border-color: #444;
+      }
+
+      body.dark-mode .main-summary-content {
+        background-color: #333;
+      }
+
+      body.dark-mode .main-summary-content p {
+        color: #e0e0e0;
+      }
+
+      body.dark-mode .main-summary-content span {
+        color: #4da6ff;
+      }
+
+      body.dark-mode .modal-content {
+        background-color: #2a2a2a;
+        border-color: #444;
+        color: #e0e0e0;
+      }
+
+      body.dark-mode #overallSummaryContent .summary-grid-column {
+        background-color: #2c2c2c;
+        border-color: #444;
+        color: #e0e0e0;
+      }
+
+      body.dark-mode .small-action-btn {
+        background-color: #5a6268;
+      }
+
+      body.dark-mode #vacationListModalContent th {
+        background-color: #333;
+        border-color: #444;
+      }
+
+      body.dark-mode #vacationListModalContent td {
+        border-color: #444;
+      }
+
+      body.dark-mode .modal-tab-btn {
+        color: #e0e0e0;
+      }
+
+      body.dark-mode .modal-tab-btn.active {
+        border-bottom-color: #4da6ff;
+      }
+      body.dark-mode .calendar-nav-btn {
+        background: #333;
+        border-color: #555;
+      }
+      body.dark-mode .calendar-day-header {
+        background-color: #2c2c2c;
+      }
+      body.dark-mode .calendar-day {
+        background-color: #2a2a2a;
+        border-color: #444;
+      }
+
+      body.dark-mode .calendar-day .vacation-list li {
+        background-color: #2c3e50;
+        color: #a6c5e3;
+      }
+      body.dark-mode
+        .calendar-day
+        .vacation-list
+        li.calendar-vacation-deduction {
+        background-color: #582c33;
+        color: #f5c6cb;
+      }
+      body.dark-mode
+        .calendar-day
+        .vacation-list
+        li.calendar-vacation-official {
+        background-color: #2c573b;
+        color: #c3e6cb;
+      }
+      body.dark-mode .calendar-day .vacation-list li.calendar-vacation-other {
+        background-color: #495057;
+        color: #e9ecef;
+      }
+
+      body.dark-mode .close-btn {
+        color: #ccc;
+      }
+
+      body.dark-mode .close-btn:hover {
+        color: #fff;
+      }
+
+      body.dark-mode .dropdown-content {
+        background-color: #2a2a2a;
+        box-shadow: 0px 8px 16px 0px rgba(255, 255, 255, 0.1);
+      }
+
+      body.dark-mode .dropdown-content button {
+        color: #e0e0e0;
+      }
+
+      body.dark-mode .dropdown-content button:hover {
+        background-color: #383838;
+      }
+
+      .header {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        position: relative;
+      }
+
+      .dark-mode-toggle {
+        position: absolute;
+        left: 0;
+        top: 50%;
+        transform: translateY(-50%);
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        font-size: 14px;
+        font-weight: bold;
+      }
+
+      .switch {
+        position: relative;
+        display: inline-block;
+        width: 40px;
+        height: 24px;
+      }
+
+      .switch input {
+        opacity: 0;
+        width: 0;
+        height: 0;
+      }
+
+      .slider {
+        position: absolute;
+        cursor: pointer;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: #ccc;
+        transition: 0.4s;
+        border-radius: 24px;
+      }
+
+      .slider:before {
+        position: absolute;
+        content: "";
+        height: 16px;
+        width: 16px;
+        left: 4px;
+        bottom: 4px;
+        background-color: white;
+        transition: 0.4s;
+        border-radius: 50%;
+      }
+
+      input:checked + .slider {
+        background-color: #2196f3;
+      }
+
+      input:checked + .slider:before {
+        transform: translateX(16px);
+      }
+
+      .employee-name-container {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+      }
+
+      #employeeReportBtn {
+        padding: 4px 8px;
+        font-size: 12px;
+        background-color: #17a2b8;
+        width: auto;
+        white-space: nowrap;
+        display: none; /* Hide initially */
+      }
+
+      #employeeReportBtn:hover {
+        background-color: #138496;
+      }
+
+      .report-modal-content {
+        text-align: right;
+        line-height: 2;
+      }
+
+      .report-modal-content h3 {
+        text-align: center;
+        margin-bottom: 20px;
+      }
+
+      .report-modal-content .status-line {
+        font-weight: bold;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        justify-content: flex-end;
+      }
+
+      .report-modal-content .status-line span {
+        background-color: #ddd;
+        padding: 2px 8px;
+        border-radius: 5px;
+        font-size: 0.9em;
+      }
+
+      /* Specific colors for acceptance chance */
+      .strong-chance {
+        background-color: #d4edda !important;
+        color: #155724 !important;
+      }
+
+      .medium-chance {
+        background-color: #ffeeba !important;
+        color: #856404 !important;
+      }
+
+      .weak-chance {
+        background-color: #f8d7da !important;
+        color: #721c24 !important;
+      }
+
+      .report-info {
+        line-height: 1.6;
+        margin-bottom: 10px;
+      }
+      .report-info strong {
+        display: inline-block;
+        min-width: 150px;
+        font-weight: bold;
+      }
+      .report-info span {
+        color: #007bff;
+      }
+
+      /* Styles for the Overall Summary Modal */
+      #overallSummaryModal .modal-content {
+        max-width: 1100px; /* Wider modal */
+      }
+
+      #overallSummaryContent .summary-grid {
+        display: flex;
+        gap: 30px; /* Space between columns */
+        justify-content: space-between;
+        margin-top: 15px;
+      }
+
+      #overallSummaryContent .summary-grid-column {
+        flex: 1;
+        min-width: 0; /* Prevents flex items from overflowing */
+        padding: 15px;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+        background-color: #f9f9f9;
+      }
+
+      #overallSummaryContent .summary-grid-column h4 {
+        margin-top: 0;
+        text-align: center;
+        border-bottom: 1px solid #ccc;
+        padding-bottom: 10px;
+        margin-bottom: 15px;
+      }
+
+      /* New Tab Styles */
+      .modal-tabs {
+        display: flex;
+        border-bottom: 1px solid #ddd;
+        margin-bottom: 20px;
+      }
+      .modal-tab-btn {
+        padding: 10px 20px;
+        cursor: pointer;
+        border: none;
+        background-color: transparent;
+        color: #333;
+        font-size: 16px;
+        border-bottom: 3px solid transparent;
+        margin-bottom: -1px; /* Align with the container's border */
+      }
+      .modal-tab-btn.active {
+        border-bottom-color: #007bff;
+        font-weight: bold;
+      }
+      .modal-tab-content {
+        display: none;
+      }
+      .modal-tab-content.active {
+        display: block;
+      }
+
+      /* New Calendar Styles */
+      .calendar-container {
+        padding: 10px;
+      }
+      .calendar-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 15px;
+      }
+      .calendar-header h4 {
+        margin: 0;
+        font-size: 1.5em;
+      }
+      .calendar-nav-btn {
+        background: #f0f0f0;
+        border: 1px solid #ddd;
+        padding: 5px 15px;
+        cursor: pointer;
+        border-radius: 4px;
+      }
+      .calendar-grid {
+        display: grid;
+        grid-template-columns: repeat(7, 1fr);
+        gap: 5px;
+      }
+      .calendar-day-header,
+      .calendar-day {
+        border: 1px solid #e0e0e0;
+        border-radius: 4px;
+        padding: 8px;
+        min-height: 120px;
+        background-color: #fff;
+      }
+      .calendar-day-header {
+        font-weight: bold;
+        text-align: center;
+        min-height: auto;
+        background-color: #f8f9fa;
+      }
+      .calendar-day.is-other-month {
+        background-color: #f9f9f9;
+        color: #ccc;
+      }
+      .calendar-day .day-number {
+        font-weight: bold;
+        font-size: 1.1em;
+        margin-bottom: 5px;
+      }
+      .calendar-day .vacation-list {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+        font-size: 0.85em;
+        max-height: 80px;
+        overflow-y: auto;
+      }
+      .calendar-day .vacation-list li {
+        background-color: #e7f3ff;
+        color: #0056b3;
+        padding: 2px 5px;
+        border-radius: 3px;
+        margin-bottom: 3px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+
+      .calendar-day .vacation-list li.calendar-vacation-deduction {
+        background-color: #f8d7da;
+        color: #721c24;
+      }
+
+      .calendar-day .vacation-list li.calendar-vacation-official {
+        background-color: #d4edda;
+        color: #155724;
+      }
+
+      .calendar-day .vacation-list li.calendar-vacation-other {
+        background-color: #e2e3e5;
+        color: #383d41;
+      }
+
+      .settings-content h4 {
+        margin-top: 0;
+        border-bottom: 1px solid #eee;
+        padding-bottom: 10px;
+      }
+
+      .settings-list {
+        list-style: none;
+        padding: 0;
+        margin-top: 20px;
+        max-height: 200px;
+        overflow-y: auto;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+      }
+
+      .settings-list li {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 10px;
+        border-bottom: 1px solid #eee;
+      }
+
+      .settings-list li:last-child {
+        border-bottom: none;
+      }
+
+      .settings-list button {
+        padding: 5px 10px;
+        margin-right: 5px;
+        width: auto;
+        font-size: 14px;
+      }
+
+      .settings-list .edit-btn {
+        background-color: #ffc107;
+      }
+      .settings-list .edit-btn:hover {
+        background-color: #e0a800;
+      }
+      .settings-list .delete-btn {
+        background-color: #dc3545;
+      }
+      .settings-list .delete-btn:hover {
+        background-color: #c82333;
+      }
+
+      /* New sorting buttons styles */
+      .settings-list .sort-btn {
+        background-color: #6c757d;
+        font-size: 12px;
+        padding: 3px 6px;
+        margin: 0 2px;
+      }
+      .settings-list .sort-btn:hover {
+        background-color: #5a6268;
+      }
+      .settings-list .sort-btn:disabled {
+        background-color: #ced4da;
+        cursor: not-allowed;
+      }
+
+      .settings-form {
+        display: flex;
+        gap: 10px;
+        margin-bottom: 20px;
+      }
+
+      .settings-form input {
+        flex: 1;
+        margin-bottom: 0;
+      }
+
+      .settings-form button {
+        width: auto;
+        white-space: nowrap;
+      }
+
+      .header-container {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+      }
+
+      #settingsBtn {
+        padding: 4px 8px; /* بدل 8px 12px */
+        font-size: 12px; /* بدل 14px */
+        background-color: #6c757d;
+        width: auto;
+        white-space: nowrap;
+      }
+
+      #settingsBtn:hover {
+        background-color: #5a6268;
+      }
+
+      .show-notification-arrow {
+        position: fixed;
+        top: 0;
+        left: 50%;
+        transform: translateX(-50%);
+        background-color: #fff3cd;
+        color: #856404;
+        padding: 2px 15px;
+        border-radius: 0 0 8px 8px;
+        cursor: pointer;
+        z-index: 1002;
+        font-size: 20px;
+        line-height: 1;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        display: none; /* Hidden by default */
+        transition: top 0.3s ease;
+      }
+
+      .show-notification-arrow:hover {
+        background-color: #ffeeba;
+      }
+
+      /* Dark Mode for Settings Modal */
+      body.dark-mode .settings-list {
+        background-color: #333;
+        border-color: #444;
+      }
+      body.dark-mode .settings-list li {
+        border-bottom-color: #444;
+        color: #e0e0e0;
+      }
+
+      .top-notification-bar {
+        background-color: #fff3cd;
+        color: #856404;
+        padding: 10px 20px;
+        text-align: center;
+        font-size: 14px;
+        display: none;
+        position: relative; /* To position the close button */
+        z-index: 1001;
+        width: 100%;
+        box-sizing: border-box;
+        max-height: 100px; /* تصغير الارتفاع */
+        overflow-y: auto; /* إضافة شريط تمرير عمودي عند الحاجة */
+        margin-bottom: 20px; /* إضافة فراغ سفلي */
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* إضافة ظل */
+        border-radius: 8px; /* زوايا منحنية */
+        padding-left: 40px; /* مساحة لزر الإغلاق */
+        border: 1px solid #ffeeba; /* إضافة إطار رفيع */
+      }
+
+      .top-notification-bar p {
+        margin: 5px 0;
+      }
+
+      @keyframes slow-blink {
+        50% {
+          opacity: 0.6;
+        }
+      }
+
+      .top-notification-bar p strong {
+        animation: slow-blink 2s infinite;
+      }
+
+      body.dark-mode .top-notification-bar {
+        background-color: #332701;
+        color: #ffecb3;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+        border: 1px solid #594a02; /* إضافة إطار رفيع للوضع الداكن */
+      }
+
+      body.dark-mode .show-notification-arrow {
+        background-color: #332701;
+        color: #ffecb3;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+      }
+
+      body.dark-mode .show-notification-arrow:hover {
+        background-color: #594a02;
+      }
+
+      .top-notification-close-btn {
+        position: absolute;
+        left: 15px;
+        top: 50%;
+        transform: translateY(-50%);
+        font-size: 24px;
+        font-weight: bold;
+        cursor: pointer;
+        color: #856404;
+      }
+      .top-notification-close-btn:hover {
+        color: #333;
+      }
+      body.dark-mode .top-notification-close-btn {
+        color: #ffecb3;
+      }
+      body.dark-mode .top-notification-close-btn:hover {
+        color: #fff;
+      }
+      /* Style adjustments for button groups */
+      .button-group {
+        display: flex;
+        gap: 2px;
+      }
+
+      .employee-name {
+        flex-grow: 1;
+        font-weight: bold;
+      }
+      #notificationBtn {
+        padding: 5px 5px; /* نفس أبعاد زر Settings */
+        font-size: 10px; /* نفس حجم الخط */
+        background-color: #6c757d;
+        width: auto;
+        white-space: nowrap;
+        transition: background-color 0.3s;
+      }
+
+      #notificationBtn:hover {
+        background-color: #5a6268;
+      }
+
+      #notificationBtn.alert {
+        background-color: red !important;
+        animation: blink 1s infinite;
+      }
+
+      @keyframes blink {
+        50% {
+          opacity: 0.5;
+        }
+      }
+
+      .header {
+        display: flex;
+        align-items: center;
+        justify-content: flex-start; /* يدفع كل العناصر لليمين */
+        position: relative;
+        gap: 15px;
+      }
+
+      .header-container {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+
+      .header-container h1 {
+        margin: 10px 30px;
+        font-size: 30px;
+      }
+
+      .dark-mode-toggle {
+        position: absolute;
+        left: 0; /* يخلي زر التبديل ملزّق في الشمال */
+        top: 50%;
+        transform: translateY(-50%);
+        display: flex;
+        align-items: center;
+        gap: 5px;
+      }
+
+      #notificationList li {
+        margin: 5px 0;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+      #notificationList .mark-read {
+        background: #28a745;
+        color: white;
+        border: none;
+        border-radius: 4px;
+        padding: 2px 6px;
+        cursor: pointer;
+        width: 30px;
+      }
+      #notificationList .mark-read:hover {
+        background: #218838;
+      }
+      .filter-container {
+        padding: 15px;
+        background-color: #f8f9fa;
+        border-radius: 5px;
+        border: 1px solid #dee2e6;
+      }
+
+      .filter-container label {
+        display: block;
+        margin-bottom: 8px;
+        font-weight: bold;
+      }
+
+      #vacationFilter {
+        width: 100%;
+        padding: 8px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        background-color: #fff;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="showTopNotificationArrow" class="show-notification-arrow">▼</div>
+    <div id="topNotificationBar" class="top-notification-bar">
+      <span id="closeTopNotificationBtn" class="top-notification-close-btn"
+        >&times;</span
+      >
+      <div id="topNotificationContent"></div>
+    </div>
+    <div class="page-center-container">
+      <div class="main-wrapper">
+        <div class="summary-column">
+          <h3 id="overallVacationSummaryTitle" class="clickable-title">
+            ملخص الإجازات
+          </h3>
+          <div id="employeeVacationSummaryList"></div>
+        </div>
+
+        <div class="container">
+          <div class="header">
+            <div class="header-container">
+              <button id="notificationBtn">Notification</button>
+              <h1>Annuals & Permissions</h1>
+              <button id="settingsBtn">Settings</button>
+            </div>
+            <div class="dark-mode-toggle">
+              <span id="toggleText">Dark Mode</span>
+              <label class="switch">
+                <input type="checkbox" id="darkModeToggle" />
+                <span class="slider"></span>
+              </label>
+            </div>
+          </div>
+
+          <div class="employee-select-container">
+            <h2>اختر موظفًا:</h2>
+            <select id="employeeSelect">
+              <option value="" disabled selected>اختر موظف...</option>
+            </select>
+          </div>
+
+          <div id="employeeDetails" class="hidden-section">
+            <div class="employee-name-container">
+              <button id="employeeReportBtn">تقرير الموظف</button>
+              <h2 id="employeeNameTitle"></h2>
+            </div>
+
+            <div class="toggle-buttons">
+              <button id="annualsBtn" class="active">Annuals</button>
+              <button id="permissionsBtn">Permissions</button>
+            </div>
+
+            <div id="annualsSection">
+              <div class="main-summary-container">
+                <div class="section-header">
+                  <h3>ملخص الإجازات</h3>
+                  <button id="viewVacationsBtn" class="small-action-btn">
+                    عرض الإجازات
+                  </button>
+                </div>
+                <div class="main-summary-content">
+                  <p>
+                    مجموع الأيام المستهلكة: <span id="totalDays">0</span> يوم
+                  </p>
+                  <p>الأيام المتبقية: <span id="remainingDays">21</span> يوم</p>
+                </div>
+                <div
+                  id="mainVacationProgressBarContainer"
+                  style="margin-top: 15px"
+                ></div>
+              </div>
+
+              <div class="form-container">
+                <h3>إضافة إجازة جديدة</h3>
+                <div id="duplicateWarningMessage">
+                  ⚠️ هذه الإجازة موجودة بالفعل.
+                </div>
+                <form id="vacationForm">
+                  <label for="vacationType">نوع الإجازة:</label>
+                  <select id="vacationType" required></select>
+
+                  <div class="date-fields">
+                    <div>
+                      <label for="startDate">تاريخ البدء:</label>
+                      <input type="date" id="startDate" required />
+                    </div>
+                    <div>
+                      <label for="endDate">تاريخ الانتهاء:</label>
+                      <input type="date" id="endDate" />
+                    </div>
+                  </div>
+
+                  <label for="comment">تعليق (اختياري):</label>
+                  <textarea id="comment" rows="3"></textarea>
+
+                  <button type="submit">إضافة إجازة</button>
+                </form>
+              </div>
+
+              <div id="warningMessage">
+                ⚠️ لا تنسى تصدير وحفظ قاعدة البيانات بشكل دوري حتى لا تفقد
+                البيانات.
+              </div>
+
+              <div class="table-container">
+                <div id="successMessage">✅ تم إضافة الإجازة بنجاح!</div>
+                <h3>قائمة الإجازات</h3>
+                <!--end of edit-->
+                <div class="filter-container" style="margin-bottom: 15px">
+                  <label for="vacationFilter">فلترة حسب نوع الإجازة:</label>
+                  <select id="vacationFilter">
+                    <option value="all">عرض الكل</option>
+                  </select>
+                </div>
+
+                <table id="vacationTable">
+                  <thead>
+                    <tr>
+                      <th>النوع</th>
+                      <th>تاريخ البدء</th>
+                      <th>تاريخ الانتهاء</th>
+                      <th>التعليق</th>
+                      <th>الإجراءات</th>
+                    </tr>
+                  </thead>
+                  <tbody id="vacationsList"></tbody>
+                </table>
+                <button
+                  id="showMoreBtn"
+                  class="show-more-btn"
+                  style="display: none"
+                ></button>
+              </div>
+            </div>
+
+            <div id="permissionsSection" class="hidden-section">
+              <div class="main-summary-container">
+                <h3>ملخص الأذونات</h3>
+                <div class="main-summary-content">
+                  <p>
+                    مجموع الساعات المستهلكة:
+                    <span id="totalPermissionHours">0</span> ساعة
+                  </p>
+                  <p>
+                    الساعات المتبقية:
+                    <span id="remainingPermissionHours">4</span> ساعة
+                  </p>
+                  <p>
+                    عدد الأيام المتبقية على انتهاء الشهر وتجديد الأذونات:
+                    <span id="daysUntilRenewal">0</span> يوم
+                  </p>
+                </div>
+                <div
+                  id="mainPermissionProgressBarContainer"
+                  style="margin-top: 15px"
+                ></div>
+              </div>
+
+              <div class="form-container">
+                <h3>إضافة إذن جديد</h3>
+                <div id="permissionLimitWarning">
+                  ⚠️ لا يمكن إضافة هذا الإذن. لقد تجاوزت الحد الأقصى المسموح به
+                  (4 ساعات).
+                </div>
+                <form id="permissionForm">
+                  <label for="permissionDate">تاريخ الإذن:</label>
+                  <input type="date" id="permissionDate" required />
+
+                  <label for="permissionHours">عدد الساعات:</label>
+                  <div class="hours-buttons">
+                    <button type="button" data-hours="0.5">0.5 ساعة</button>
+                    <button type="button" data-hours="1">1 ساعة</button>
+                    <button type="button" data-hours="2">2 ساعة</button>
+                    <button type="button" data-hours="3">3 ساعة</button>
+                    <button type="button" data-hours="4">4 ساعات</button>
+                  </div>
+                  <input
+                    type="number"
+                    id="permissionHours"
+                    required
+                    min="0.5"
+                    step="0.5"
+                    placeholder="أو أدخل عدد الساعات يدوياً"
+                  />
+
+                  <label for="permissionComment">تعليق (اختياري):</label>
+                  <textarea id="permissionComment" rows="3"></textarea>
+
+                  <div id="permissionWarningMessage">
+                    ⚠️ لا تنسى تصدير وحفظ قاعدة البيانات بشكل دوري حتى لا تفقد
+                    البيانات.
+                  </div>
+
+                  <button type="submit">إضافة إذن</button>
+                </form>
+              </div>
+
+              <div class="table-container">
+                <div class="delete-permissions-dropdown">
+                  <button
+                    class="delete-permissions-btn"
+                    id="deletePermissionsBtn"
+                  >
+                    حذف الأذونات
+                  </button>
+                  <div class="dropdown-content">
+                    <button id="deleteAllCurrentPermissionsBtn">
+                      حذف أذونات الموظف الحالي
+                    </button>
+                    <button id="deleteAllPermissionsBtn">
+                      حذف أذونات كل الموظفين
+                    </button>
+                  </div>
+                </div>
+                <div id="passwordIncorrectMessage">
+                  ⚠️ كلمة المرور غير صحيحة.
+                </div>
+                <div id="permissionSuccessMessage">
+                  ✅ تم إضافة الإذن بنجاح!
+                </div>
+                <h3>قائمة الأذونات</h3>
+                <table id="permissionTable">
+                  <thead>
+                    <tr>
+                      <th>التاريخ</th>
+                      <th>الساعات</th>
+                      <th>التعليق</th>
+                      <th>الإجراءات</th>
+                    </tr>
+                  </thead>
+                  <tbody id="permissionsList"></tbody>
+                </table>
+                <button
+                  id="showMorePermissionsBtn"
+                  class="show-more-btn"
+                  style="display: none"
+                ></button>
+              </div>
+            </div>
+
+            <p id="message" class="message"></p>
+          </div>
+          <div class="actions-container">
+            <button id="importBtn">استيراد قاعدة بيانات</button>
+            <button id="linkDbBtn" style="background-color: #ffc107; color: black">
+              ربط ملف للحفظ التلقائي
+            </button>
+            <input
+              type="file"
+              id="jsonFile"
+              accept=".json"
+              style="display: none"
+            />
+            <button id="exportBtn">تصدير قاعدة البيانات</button>
+          </div>
+          <div id="dbStatus" style="text-align: center; margin-top: 10px; color: #6c757d; font-size: 14px;">
+            <!-- Status will be inserted here by JS -->
+          </div>
+        </div>
+
+        <div class="summary-column">
+          <h3>ملخص الأذونات</h3>
+          <div id="employeePermissionSummaryList"></div>
+        </div>
+      </div>
+    </div>
+
+    <div id="overallSummaryModal" class="modal">
+      <div class="modal-content">
+        <span class="close-btn" id="overallSummaryModalCloseBtn">&times;</span>
+        <h3>ملخص الإجازات العام</h3>
+
+        <!-- Tabs -->
+        <div class="modal-tabs">
+          <button class="modal-tab-btn active" data-tab="summary">
+            الملخص الإحصائي
+          </button>
+          <button class="modal-tab-btn" data-tab="calendar">عرض التقويم</button>
+        </div>
+
+        <!-- Tab Content -->
+        <div id="summaryTabContent" class="modal-tab-content active">
+          <div id="overallSummaryContent" class="report-modal-content">
+            <!-- Existing summary content will be generated by JS here -->
+          </div>
+        </div>
+
+        <div id="calendarTabContent" class="modal-tab-content">
+          <div class="calendar-container">
+            <div class="calendar-header">
+              <button id="prevMonthBtn" class="calendar-nav-btn">
+                &lt; السابق
+              </button>
+              <h4 id="calendarMonthYear"></h4>
+              <button id="nextMonthBtn" class="calendar-nav-btn">
+                التالي &gt;
+              </button>
+            </div>
+            <div class="calendar-grid" id="calendarDaysGrid">
+              <!-- Calendar days will be generated by JS -->
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div id="commentModal" class="modal">
+      <div class="modal-content">
+        <span class="close-btn">&times;</span>
+        <h3>التعليق الكامل</h3>
+        <p id="modalCommentText"></p>
+      </div>
+    </div>
+
+    <div id="passwordModal" class="modal">
+      <div class="modal-content">
+        <span class="close-btn" id="passwordModalCloseBtn">&times;</span>
+        <h3>تأكيد الحذف</h3>
+        <p>للتأكيد، يرجى إدخال كلمة المرور.</p>
+        <input
+          type="password"
+          id="passwordInput"
+          placeholder="أدخل كلمة المرور"
+        />
+        <div
+          id="passwordIncorrectMessageInModal"
+          style="display: none; color: #dc3545; text-align: center"
+        >
+          كلمة المرور غير صحيحة.
+        </div>
+        <button id="confirmDeleteBtn">تأكيد</button>
+      </div>
+    </div>
+
+    <div id="reportModal" class="modal">
+      <div class="modal-content report-modal-content">
+        <span class="close-btn" id="reportModalCloseBtn">&times;</span>
+        <h3>تقرير الموظف: <span id="reportEmployeeName"></span></h3>
+
+        <h4>الإجازات السنوية:</h4>
+        <div class="report-info">
+          <strong>مجموع الأيام المستهلكة:</strong>
+          <span id="reportTotalVacationDays">0</span> يوم
+        </div>
+        <div class="report-info">
+          <strong>الأيام المتبقية:</strong>
+          <span id="reportRemainingVacationDays">0</span> يوم
+        </div>
+        <div class="report-info">
+          <strong>النسبة المئوية للأيام المتبقية:</strong>
+          <span id="reportVacationPercentage">0%</span>
+        </div>
+        <div class="report-info">
+          <strong>فرصة قبول الإجازة:</strong>
+          <span id="reportAcceptanceChance"></span>
+        </div>
+        <div class="report-info">
+          <strong>آخر إجازة:</strong>
+          <span id="reportLastVacationDate">لا توجد إجازات</span>
+        </div>
+        <div class="report-info">
+          <strong>منذ آخر إجازة:</strong>
+          <span id="reportDaysSinceLastVacation">0</span> يوم
+        </div>
+        <div class="report-info">
+          <strong>أنواع الإجازات:</strong>
+          <span id="reportVacationTypes">لا توجد أنواع</span>
+        </div>
+
+        <hr />
+        <h4>إجازات الأرباع السنوية:</h4>
+        <div id="quarterlyVacations" class="report-info">
+          <div id="q1">
+            <strong>الربع الأول (يناير - مارس):</strong> <span>0</span> يوم
+          </div>
+          <div id="q2">
+            <strong>الربع الثاني (أبريل - يونيو):</strong> <span>0</span> يوم
+          </div>
+          <div id="q3">
+            <strong>الربع الثالث (يوليو - سبتمبر):</strong> <span>0</span> يوم
+          </div>
+          <div id="q4">
+            <strong>الربع الرابع (أكتوبر - ديسمبر):</strong> <span>0</span> يوم
+          </div>
+        </div>
+
+        <hr />
+
+        <h4>الأذونات:</h4>
+        <div class="report-info">
+          <strong>مجموع الساعات المستهلكة:</strong>
+          <span id="reportTotalPermissionHours">0</span> ساعة
+        </div>
+        <div class="report-info">
+          <strong>الساعات المتبقية:</strong>
+          <span id="reportRemainingPermissionHours">0</span> ساعة
+        </div>
+        <div class="report-info">
+          <strong>آخر إذن:</strong>
+          <span id="reportLastPermissionDate">لا توجد أذونات</span>
+        </div>
+        <div class="report-info">
+          <strong>اليوم الموافق:</strong>
+          <span id="reportLastPermissionDay">-</span>
+        </div>
+      </div>
+    </div>
+
+    <div id="settingsModal" class="modal">
+      <div class="modal-content settings-content">
+        <span class="close-btn" id="settingsModalCloseBtn">&times;</span>
+        <h3>الإعدادات</h3>
+
+        <h4>إدارة الموظفين</h4>
+        <form id="addEmployeeForm" class="settings-form">
+          <input
+            type="text"
+            id="newEmployeeName"
+            placeholder="اسم الموظف الجديد"
+            required
+          />
+          <button type="submit">إضافة</button>
+        </form>
+        <ul id="employeeList" class="settings-list"></ul>
+        <div id="employeeMessage" class="message"></div>
+
+        <h4>إدارة أنواع الإجازات</h4>
+        <form
+          id="addVacationTypeForm"
+          class="settings-form"
+          style="align-items: center"
+        >
+          <input
+            type="text"
+            id="newVacationType"
+            placeholder="نوع إجازة جديد"
+            required
+          />
+          <label
+            style="
+              display: flex;
+              align-items: center;
+              gap: 5px;
+              white-space: nowrap;
+              margin-bottom: 0;
+            "
+          >
+            <input type="checkbox" id="newVacationDeducts" /> يخصم من الرصيد
+          </label>
+          <button type="submit">إضافة</button>
+        </form>
+        <ul id="vacationTypeList" class="settings-list"></ul>
+        <div id="vacationTypeMessage" class="message"></div>
+      </div>
+    </div>
+
+    <div id="vacationListModal" class="modal">
+      <div class="modal-content">
+        <span class="close-btn" id="vacationListModalCloseBtn">&times;</span>
+        <h3>قائمة إجازات: <span id="vacationListModalEmployeeName"></span></h3>
+        <div id="vacationListModalContent"></div>
+      </div>
+    </div>
+
+    <div id="notificationModal" class="modal">
+      <div class="modal-content">
+        <span id="notificationModalCloseBtn" class="close-btn">&times;</span>
+        <h3>التنبيهات</h3>
+        <ul id="notificationList"></ul>
+      </div>
+    </div>
+
+    <footer>
+      <p style="margin: 0">
+        developed by : Mohamed Soliman Elfeky - Damanhour Branch
+      </p>
+    </footer>
+
+    <script>
+      document.addEventListener("DOMContentLoaded", () => {
+        // --- التحقق من حقوق التطوير ---
+        const expectedCredit =
+          "developed by : Mohamed Soliman Elfeky - Damanhour Branch";
+        const footerP = document.querySelector("footer p");
+        if (!footerP || footerP.textContent.trim() !== expectedCredit) {
+          document.body.innerHTML = `<div style="text-align: center; padding: 50px; font-size: 20px; color: red; font-family: Arial, sans-serif;">
+                <strong>خطأ في التحقق من سلامة التطبيق.</strong><br>
+                يرجى عدم تعديل أو حذف حقوق التطوير.
+            </div>`;
+          // This will stop all subsequent JavaScript from running.
+          throw new Error("Integrity check failed. Footer has been modified.");
+        }
+        // --- نهاية التحقق ---
+
+        let currentVacationFilter = "all"; // فلتر الإجازات الحالي
+        const employeeSelect = document.getElementById("employeeSelect");
+        const employeeDetailsSection =
+          document.getElementById("employeeDetails");
+        const employeeNameTitle = document.getElementById("employeeNameTitle");
+        const employeeReportBtn = document.getElementById("employeeReportBtn");
+        const annualsSection = document.getElementById("annualsSection");
+        const permissionsSection =
+          document.getElementById("permissionsSection");
+        const annualsBtn = document.getElementById("annualsBtn");
+        const permissionsBtn = document.getElementById("permissionsBtn");
+
+        const viewVacationsBtn = document.getElementById("viewVacationsBtn");
+        const vacationListModal = document.getElementById("vacationListModal");
+        const vacationListModalCloseBtn = document.getElementById(
+          "vacationListModalCloseBtn"
+        );
+        const vacationListModalEmployeeName = document.getElementById(
+          "vacationListModalEmployeeName"
+        );
+        const vacationListModalContent = document.getElementById(
+          "vacationListModalContent"
+        );
+
+        const vacationForm = document.getElementById("vacationForm");
+        const vacationTypeSelect = document.getElementById("vacationType");
+        const startDateInput = document.getElementById("startDate");
+        const endDateInput = document.getElementById("endDate");
+        const commentInput = document.getElementById("comment");
+        const vacationsList = document.getElementById("vacationsList");
+        const showMoreBtn = document.getElementById("showMoreBtn");
+        const VACATION_LIMIT = 21;
+        const employeeVacationSummaryList = document.getElementById(
+          "employeeVacationSummaryList"
+        );
+        const employeePermissionSummaryList = document.getElementById(
+          "employeePermissionSummaryList"
+        );
+
+        const permissionForm = document.getElementById("permissionForm");
+        const permissionDateInput = document.getElementById("permissionDate");
+        const permissionHoursInput = document.getElementById("permissionHours");
+        const permissionCommentInput =
+          document.getElementById("permissionComment");
+        const permissionsList = document.getElementById("permissionsList");
+        const showMorePermissionsBtn = document.getElementById(
+          "showMorePermissionsBtn"
+        );
+        const hoursButtons = document.querySelectorAll(".hours-buttons button");
+        const totalPermissionHoursSpan = document.getElementById(
+          "totalPermissionHours"
+        );
+        const remainingPermissionHoursSpan = document.getElementById(
+          "remainingPermissionHours"
+        );
+        const daysUntilRenewalSpan =
+          document.getElementById("daysUntilRenewal");
+        const PERMISSION_LIMIT = 4;
+        const permissionSuccessMessage = document.getElementById(
+          "permissionSuccessMessage"
+        );
+        const permissionWarningMessage = document.getElementById(
+          "permissionWarningMessage"
+        );
+        const passwordIncorrectMessage = document.getElementById(
+          "passwordIncorrectMessage"
+        );
+        const passwordIncorrectMessageInModal = document.getElementById(
+          "passwordIncorrectMessageInModal"
+        );
+
+        const exportBtn = document.getElementById("exportBtn");
+        const importBtn = document.getElementById("importBtn");
+        const jsonFileInput = document.getElementById("jsonFile");
+        const messageElement = document.getElementById("message");
+        const totalDaysSpan = document.getElementById("totalDays");
+        const remainingDaysSpan = document.getElementById("remainingDays");
+        const warningMessage = document.getElementById("warningMessage");
+        const duplicateWarningMessage = document.getElementById(
+          "duplicateWarningMessage"
+        );
+        const successMessage = document.getElementById("successMessage");
+        const permissionLimitWarning = document.getElementById(
+          "permissionLimitWarning"
+        );
+
+        const deletePermissionsBtn = document.getElementById(
+          "deletePermissionsBtn"
+        );
+        const deleteAllCurrentPermissionsBtn = document.getElementById(
+          "deleteAllCurrentPermissionsBtn"
+        );
+        const deleteAllPermissionsBtn = document.getElementById(
+          "deleteAllPermissionsBtn"
+        );
+        const passwordModal = document.getElementById("passwordModal");
+        const passwordInput = document.getElementById("passwordInput");
+        const confirmDeleteBtn = document.getElementById("confirmDeleteBtn");
+        const passwordModalCloseBtn = document.getElementById(
+          "passwordModalCloseBtn"
+        );
+
+        const darkModeToggle = document.getElementById("darkModeToggle");
+        const toggleText = document.getElementById("toggleText");
+        const body = document.body;
+
+        const CORRECT_PASSWORD = "2026";
+
+        const reportModal = document.getElementById("reportModal");
+        const reportModalCloseBtn = document.getElementById(
+          "reportModalCloseBtn"
+        );
+        const reportEmployeeName =
+          document.getElementById("reportEmployeeName");
+        const reportTotalVacationDays = document.getElementById(
+          "reportTotalVacationDays"
+        );
+        const reportRemainingVacationDays = document.getElementById(
+          "reportRemainingVacationDays"
+        );
+        const reportVacationPercentage = document.getElementById(
+          "reportVacationPercentage"
+        );
+        const reportAcceptanceChance = document.getElementById(
+          "reportAcceptanceChance"
+        );
+        const reportTotalPermissionHours = document.getElementById(
+          "reportTotalPermissionHours"
+        );
+        const reportRemainingPermissionHours = document.getElementById(
+          "reportRemainingPermissionHours"
+        );
+        const reportLastVacationDate = document.getElementById(
+          "reportLastVacationDate"
+        );
+        const reportDaysSinceLastVacation = document.getElementById(
+          "reportDaysSinceLastVacation"
+        );
+        const reportVacationTypes = document.getElementById(
+          "reportVacationTypes"
+        );
+
+        const settingsBtn = document.getElementById("settingsBtn");
+        const settingsModal = document.getElementById("settingsModal");
+        const settingsModalCloseBtn = document.getElementById(
+          "settingsModalCloseBtn"
+        );
+        const addEmployeeForm = document.getElementById("addEmployeeForm");
+        const newEmployeeNameInput = document.getElementById("newEmployeeName");
+        const employeeListUl = document.getElementById("employeeList");
+        const employeeMessage = document.getElementById("employeeMessage");
+        const addVacationTypeForm = document.getElementById(
+          "addVacationTypeForm"
+        );
+        const newVacationTypeInput = document.getElementById("newVacationType");
+        const vacationTypeListUl = document.getElementById("vacationTypeList");
+        const vacationTypeMessage = document.getElementById(
+          "vacationTypeMessage"
+        );
+
+        const overallVacationSummaryTitle = document.getElementById(
+          "overallVacationSummaryTitle"
+        );
+        const overallSummaryModal = document.getElementById(
+          "overallSummaryModal"
+        );
+        const overallSummaryModalCloseBtn = document.getElementById(
+          "overallSummaryModalCloseBtn"
+        );
+        const overallSummaryContent = document.getElementById(
+          "overallSummaryContent"
+        );
+
+        let calendarCurrentDate = new Date();
+        let vacationsByDate = {}; // Cache for vacation data
+
+        let masterEmployeeList = [
+          "محمد سليمان",
+          "احمد الشربيني",
+          "محمد صلاح",
+          "صفوت شلبي",
+          "مصطفى بركات",
+          "مروان حمد",
+          "نورهان هاني",
+          "احمد الطنيخي",
+          "احمد العسال",
+          "ريهام بطراوي",
+          "تقى عبدالله",
+        ];
+
+        let vacationTypeList = [
+          { name: "سنوية", deducts: true },
+          { name: "مرضية", deducts: false },
+          { name: "اجازة وضع", deducts: false },
+          { name: "بدون راتب", deducts: false },
+          { name: "خصم", deducts: true },
+          { name: "اجازة رسمية", deducts: false },
+        ];
+
+        let allData = {};
+
+        let currentEmployee = null;
+        let currentSection = "annuals";
+        let showAllVacations = false;
+        let showAllPermissions = false;
+        let deletionType = "";
+        let dismissedNotifications = [];
+
+        let vacationSummaryState = {};
+        let permissionSummaryState = {};
+
+        const vacationFilter = document.getElementById("vacationFilter");
+
+        const topNotificationBar =
+          document.getElementById("topNotificationBar");
+        const topNotificationContent = document.getElementById(
+          "topNotificationContent"
+        );
+        const closeTopNotificationBtn = document.getElementById(
+          "closeTopNotificationBtn"
+        );
+        const showTopNotificationArrow = document.getElementById(
+          "showTopNotificationArrow"
+        );
+
+        const dbStatusElement = document.getElementById("dbStatus");
+        dbStatusElement.textContent = "الحفظ التلقائي غير مرتبط بملف.";
+
+        let dbFileHandle = null; // To store the file handle for automatic saving
+
+        vacationFilter.addEventListener("change", (e) => {
+          currentVacationFilter = e.target.value;
+          showAllVacations = false; // إعادة تعيين عرض الكل عند تغيير الفلتر
+          renderVacations();
+        });
+
+        function updateTopNotificationBar() {
+          const today = new Date();
+          const currentMonth = today.getMonth(); // 0-11
+          // عدد الشهور المتبقية بما في ذلك الشهر الحالي
+          const remainingMonths = 12 - currentMonth;
+
+          let notificationsHtml = "";
+
+          masterEmployeeList.forEach((employeeName) => {
+            const employeeVacations = allData[employeeName]?.vacations || [];
+            let totalDaysUsed = 0;
+
+            employeeVacations.forEach((vacation) => {
+              const vacationTypeDetails = vacationTypeList.find(
+                (t) => t.name === vacation.vacationType
+              );
+              if (vacationTypeDetails && vacationTypeDetails.deducts) {
+                const start = new Date(vacation.startDate);
+                const end = new Date(vacation.endDate || vacation.startDate);
+                const diffTime = Math.abs(end - start);
+                const diffDays =
+                  Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1;
+                totalDaysUsed += diffDays;
+              }
+            });
+
+            const remainingDays = VACATION_LIMIT - totalDaysUsed;
+
+            if (remainingDays <= 5 && remainingDays > 0) {
+              notificationsHtml += `<p><strong>${employeeName}</strong> (${remainingDays} أيام متبقية): يرجى العلم ان رصيد الموظف من الاجازات قد قارب على الانتهاء.</p>`;
+            }
+
+            // الشرط الجديد: يتم التحقق من الرصيد الكبير فقط إذا كانت الشهور المتبقية 4 أو أقل
+            if (remainingMonths <= 4 && remainingMonths > 0) {
+              if (remainingDays / remainingMonths >= 4) {
+                notificationsHtml += `<p><strong>${employeeName}</strong> (${remainingDays} أيام متبقية): يرجى العلم ان رصيد الموظف من الاجازات كبير وقد لا يتم استغلاله.</p>`;
+              }
+            }
+
+            // إضافة تنبيه للأذونات
+            const employeePermissions =
+              allData[employeeName]?.permissions || [];
+            const totalPermHoursUsed = employeePermissions.reduce(
+              (total, perm) => total + parseFloat(perm.permissionHours),
+              0
+            );
+            const remainingPermHours = PERMISSION_LIMIT - totalPermHoursUsed;
+
+            if (remainingPermHours <= 1 && remainingPermHours > 0) {
+              notificationsHtml += `<p><strong>${employeeName}</strong> (متبقي ${remainingPermHours} ساعة إذن): يرجى العلم أن رصيد أذونات الموظف قارب على الانتهاء.</p>`;
+            }
+          });
+
+          if (notificationsHtml) {
+            topNotificationContent.innerHTML = notificationsHtml;
+            // Show bar by default if there are notifications, unless user has closed it.
+            if (topNotificationBar.style.display !== "none") {
+              topNotificationBar.style.display = "block";
+              showTopNotificationArrow.style.display = "none";
+            } else {
+              // It was hidden by user, so show the arrow instead.
+              showTopNotificationArrow.style.display = "block";
+            }
+          } else {
+            topNotificationContent.innerHTML = "";
+            topNotificationBar.style.display = "none";
+            showTopNotificationArrow.style.display = "none";
+          }
+        }
+
+        const showMessage = (msg, isError = false) => {
+          messageElement.textContent = msg;
+          messageElement.style.color = isError ? "#dc3545" : "#28a745";
+          setTimeout(() => {
+            messageElement.textContent = "";
+          }, 3000);
+        };
+
+        const saveData = (data) => {
+          // --- Automatic Save to File (if linked) ---
+          if (dbFileHandle) {
+            const writeToFile = async () => {
+              const fullDbState = {
+                employees: masterEmployeeList,
+                vacationTypes: vacationTypeList,
+                allEmployeeData: data,
+              };
+              const jsonString = JSON.stringify(fullDbState, null, 2);
+              try {
+                const writable = await dbFileHandle.createWritable();
+                await writable.write(jsonString);
+                await writable.close();
+                console.log("Database automatically saved to linked file.");
+              } catch (err) {
+                console.error("Failed to save to file automatically:", err);
+                // To avoid annoying the user, we can show the message only once
+                // or just log it to the console.
+                // showMessage("فشل الحفظ التلقائي في الملف.", true);
+              }
+            };
+            writeToFile(); // Fire-and-forget
+          }
+
+          // --- Save to localStorage (as primary/backup) ---
+          localStorage.setItem("allData", JSON.stringify(data));
+          localStorage.setItem(
+            "vacationTypeList",
+            JSON.stringify(vacationTypeList)
+          );
+          localStorage.setItem(
+            "masterEmployeeList",
+            JSON.stringify(masterEmployeeList)
+          );
+          localStorage.setItem(
+            "dismissedNotifications",
+            JSON.stringify(dismissedNotifications)
+          );
+        };
+
+        const loadData = () => {
+          const storedData = localStorage.getItem("allData");
+          const storedVacationTypes = localStorage.getItem("vacationTypeList");
+          const storedEmployeeList = localStorage.getItem("masterEmployeeList");
+          const storedDismissed = localStorage.getItem(
+            "dismissedNotifications"
+          );
+
+          if (storedData) {
+            allData = JSON.parse(storedData);
+          }
+
+          if (storedEmployeeList) {
+            masterEmployeeList = JSON.parse(storedEmployeeList);
+          } else {
+            // Initialize data for employees if not exists
+            masterEmployeeList.forEach((employee) => {
+              if (!allData[employee]) {
+                allData[employee] = { vacations: [], permissions: [] };
+              }
+            });
+          }
+
+          if (storedVacationTypes) {
+            let loadedTypes = JSON.parse(storedVacationTypes);
+            // Backward compatibility check
+            if (loadedTypes.length > 0 && typeof loadedTypes[0] === "string") {
+              vacationTypeList = loadedTypes.map((typeName) => {
+                // Default logic for old data
+                const deducts = typeName === "سنوية" || typeName === "خصم";
+                return { name: typeName, deducts: deducts };
+              });
+              saveData(allData); // Save in the new format
+            } else {
+              vacationTypeList = loadedTypes;
+            }
+          }
+
+          if (storedDismissed) {
+            dismissedNotifications = JSON.parse(storedDismissed);
+          }
+
+          renderEmployees();
+          renderVacationTypes();
+          if (currentEmployee) {
+            selectEmployee(currentEmployee);
+          }
+          renderEmployeeVacationSummaries();
+          renderEmployeePermissionSummaries();
+          updateTopNotificationBar();
+        };
+
+        const renderEmployees = () => {
+          employeeSelect.innerHTML =
+            '<option value="" disabled selected>اختر موظف...</option>';
+          masterEmployeeList.forEach((employee) => {
+            const option = document.createElement("option");
+            option.value = employee;
+            option.textContent = employee;
+            employeeSelect.appendChild(option);
+          });
+        };
+
+        const renderVacationTypes = () => {
+          vacationTypeSelect.innerHTML = "";
+          vacationTypeList.forEach((type) => {
+            const option = document.createElement("option");
+            option.value = type.name;
+            option.textContent = type.name;
+            vacationTypeSelect.appendChild(option);
+          });
+          updateVacationFilter();
+        };
+
+        const renderData = () => {
+          if (currentSection === "annuals") {
+            renderVacations();
+          } else if (currentSection === "permissions") {
+            renderPermissions();
+            calculateDaysUntilRenewal();
+          }
+        };
+
+        const calculateDaysUntilRenewal = () => {
+          const today = new Date();
+          let nextRenewalDate = new Date(
+            today.getFullYear(),
+            today.getMonth(),
+            15
+          );
+
+          if (today.getDate() >= 15) {
+            nextRenewalDate.setMonth(nextRenewalDate.getMonth() + 1);
+          }
+
+          const timeDifference = nextRenewalDate.getTime() - today.getTime();
+          const daysDifference = Math.ceil(
+            timeDifference / (1000 * 60 * 60 * 24)
+          );
+          daysUntilRenewalSpan.textContent = daysDifference;
+        };
+
+        const calculateTotalPermissionHours = () => {
+          const employeePermissions =
+            allData[currentEmployee]?.permissions || [];
+          return employeePermissions.reduce(
+            (total, perm) => total + parseFloat(perm.permissionHours),
+            0
+          );
+        };
+
+        const renderEmployeeVacationSummaries = () => {
+          employeeVacationSummaryList.innerHTML = "";
+          masterEmployeeList.forEach((employeeName) => {
+            const employeeVacations = [
+              ...(allData[employeeName]?.vacations || []),
+            ].reverse();
+            let totalDaysUsed = 0;
+
+            employeeVacations.forEach((vacation) => {
+              const start = new Date(vacation.startDate);
+              const end = new Date(vacation.endDate);
+              const diffTime = Math.abs(end - start);
+              const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1;
+              const vacationTypeDetails = vacationTypeList.find(
+                (t) => t.name === vacation.vacationType
+              );
+              if (vacationTypeDetails && vacationTypeDetails.deducts) {
+                totalDaysUsed += diffDays;
+              }
+            });
+
+            if (!vacationSummaryState[employeeName]) {
+              vacationSummaryState[employeeName] = false;
+            }
+
+            const displayLimit = vacationSummaryState[employeeName]
+              ? employeeVacations.length
+              : 5;
+            const vacationsToDisplay = employeeVacations.slice(0, displayLimit);
+
+            const vacationDatesHtml = vacationsToDisplay
+              .map((vacation) => {
+                const start = new Date(vacation.startDate);
+                const end = new Date(vacation.endDate);
+                const diffTime = Math.abs(end - start);
+                const diffDays =
+                  Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1;
+
+                let dateDisplay;
+                if (vacation.startDate === vacation.endDate) {
+                  dateDisplay = vacation.startDate;
+                } else {
+                  dateDisplay = `من ${vacation.startDate} إلى ${vacation.endDate}`;
+                }
+
+                // إضافة نوع الإجازة لو كانت خصم أو مرضية
+                if (
+                  vacation.vacationType === "خصم" ||
+                  vacation.vacationType === "مرضية" ||
+                  vacation.vacationType === "اجازة رسمية"
+                ) {
+                  dateDisplay += ` (${vacation.vacationType})`;
+                }
+
+                let liClass = "";
+                if (vacation.vacationType === "خصم") {
+                  liClass = 'class="deduction-day"';
+                } else if (vacation.vacationType === "اجازة رسمية") {
+                  liClass = 'class="double-day"';
+                }
+
+                return `<li ${liClass}>${dateDisplay} (${diffDays} يوم)</li>`;
+              })
+              .join("");
+
+            let warningHtml = "";
+            if (totalDaysUsed >= VACATION_LIMIT) {
+              warningHtml = `<p style="color: #dc3545; font-size: 0.8em; text-align: center; margin-bottom: 5px;">تم استهلاك رصيد الاجازات السنوي</p>`;
+            }
+
+            const summaryItem = document.createElement("div");
+            summaryItem.classList.add("summary-item");
+            summaryItem.innerHTML = `
+                          ${warningHtml}
+                          <p class="summary-employee-name" onclick="selectEmployeeAndShowSection('${employeeName}', 'annuals')">${employeeName} - الأيام المستهلكة: <span>${totalDaysUsed}</span> يوم</p>
+                          <ul>
+                              ${vacationDatesHtml}
+                          </ul>
+                      `;
+
+            if (employeeVacations.length > 5) {
+              const footer = document.createElement("div");
+              footer.classList.add("summary-item-footer");
+              const showMoreButton = document.createElement("button");
+              showMoreButton.textContent = vacationSummaryState[employeeName]
+                ? "عرض أقل"
+                : `عرض المزيد (${employeeVacations.length - 5})`;
+              showMoreButton.addEventListener("click", () => {
+                vacationSummaryState[employeeName] =
+                  !vacationSummaryState[employeeName];
+                renderEmployeeVacationSummaries();
+              });
+              footer.appendChild(showMoreButton);
+              summaryItem.appendChild(footer);
+            }
+
+            employeeVacationSummaryList.appendChild(summaryItem);
+          });
+        };
+
+        const renderEmployeePermissionSummaries = () => {
+          employeePermissionSummaryList.innerHTML = "";
+          masterEmployeeList.forEach((employeeName) => {
+            const employeePermissions =
+              allData[employeeName]?.permissions || [];
+            let totalHoursUsed = 0;
+
+            employeePermissions.forEach((permission) => {
+              totalHoursUsed += parseFloat(permission.permissionHours);
+            });
+
+            if (!permissionSummaryState[employeeName]) {
+              permissionSummaryState[employeeName] = false;
+            }
+
+            const displayLimit = permissionSummaryState[employeeName]
+              ? employeePermissions.length
+              : 5;
+            const permissionsToDisplay = employeePermissions.slice(
+              0,
+              displayLimit
+            );
+
+            const permissionHoursHtml = permissionsToDisplay
+              .map((permission) => {
+                return `<li>${permission.permissionDate} (${permission.permissionHours} ساعة)</li>`;
+              })
+              .join("");
+
+            let warningHtml = "";
+            if (totalHoursUsed >= PERMISSION_LIMIT) {
+              warningHtml = `<p style="color: #dc3545; font-size: 0.8em; text-align: center; margin-bottom: 5px;">تم استهلاك جميع ساعات الاذن للشهر الحالي</p>`;
+            }
+
+            const summaryItem = document.createElement("div");
+            summaryItem.classList.add("summary-item");
+            summaryItem.innerHTML = `
+                          ${warningHtml}
+                          <p class="summary-employee-name" onclick="selectEmployeeAndShowSection('${employeeName}', 'permissions')">${employeeName} - الساعات المستهلكة: <span>${totalHoursUsed}</span> ساعة</p>
+                          <ul>
+                              ${permissionHoursHtml}
+                          </ul>
+                      `;
+
+            if (employeePermissions.length > 5) {
+              const footer = document.createElement("div");
+              footer.classList.add("summary-item-footer");
+              const showMoreButton = document.createElement("button");
+              showMoreButton.textContent = permissionSummaryState[employeeName]
+                ? "عرض أقل"
+                : `عرض المزيد (${employeePermissions.length - 5})`;
+              showMoreButton.addEventListener("click", () => {
+                permissionSummaryState[employeeName] =
+                  !permissionSummaryState[employeeName];
+                renderEmployeePermissionSummaries();
+              });
+              footer.appendChild(showMoreButton);
+              summaryItem.appendChild(footer);
+            }
+
+            employeePermissionSummaryList.appendChild(summaryItem);
+          });
+        };
+
+        const mapVacationsToDates = () => {
+          const map = {};
+          masterEmployeeList.forEach((employeeName) => {
+            const employeeVacations = allData[employeeName]?.vacations || [];
+            employeeVacations.forEach((vacation) => {
+              const startParts = vacation.startDate.split("-");
+              const endParts = (vacation.endDate || vacation.startDate).split(
+                "-"
+              );
+
+              let currentDate = new Date(
+                startParts[0],
+                startParts[1] - 1,
+                startParts[2]
+              );
+              const endDate = new Date(
+                endParts[0],
+                endParts[1] - 1,
+                endParts[2]
+              );
+
+              while (currentDate <= endDate) {
+                const dateString = currentDate.toISOString().split("T")[0]; // YYYY-MM-DD
+                if (!map[dateString]) {
+                  map[dateString] = [];
+                }
+                map[dateString].push({
+                  name: employeeName,
+                  type: vacation.vacationType,
+                });
+                currentDate.setDate(currentDate.getDate() + 1);
+              }
+            });
+          });
+          return map;
+        };
+
+        const generateCalendar = (date) => {
+          const calendarDaysGrid = document.getElementById("calendarDaysGrid");
+          const calendarMonthYear =
+            document.getElementById("calendarMonthYear");
+          calendarDaysGrid.innerHTML =
+            '<div class="calendar-day-header">الأحد</div><div class="calendar-day-header">الاثنين</div><div class="calendar-day-header">الثلاثاء</div><div class="calendar-day-header">الأربعاء</div><div class="calendar-day-header">الخميس</div><div class="calendar-day-header">الجمعة</div><div class="calendar-day-header">السبت</div>';
+
+          const year = date.getFullYear();
+          const month = date.getMonth();
+
+          calendarMonthYear.textContent = `${date.toLocaleString("ar-EG", {
+            month: "long",
+          })} ${year}`;
+
+          const firstDayOfMonth = new Date(year, month, 1).getDay();
+          const daysInMonth = new Date(year, month + 1, 0).getDate();
+
+          for (let i = 0; i < firstDayOfMonth; i++) {
+            const emptyCell = document.createElement("div");
+            emptyCell.classList.add("calendar-day", "is-other-month");
+            calendarDaysGrid.appendChild(emptyCell);
+          }
+
+          for (let day = 1; day <= daysInMonth; day++) {
+            const dayCell = document.createElement("div");
+            dayCell.classList.add("calendar-day");
+            const dateString = `${year}-${String(month + 1).padStart(
+              2,
+              "0"
+            )}-${String(day).padStart(2, "0")}`;
+            const vacationsOnThisDay = vacationsByDate[dateString] || [];
+            let vacationHtml =
+              vacationsOnThisDay.length > 0
+                ? `<ul class="vacation-list">${vacationsOnThisDay
+                    .map((vacationInfo) => {
+                      let liClass = "";
+                      if (vacationInfo.type === "خصم") {
+                        liClass = 'class="calendar-vacation-deduction"';
+                      } else if (vacationInfo.type === "اجازة رسمية") {
+                        liClass = 'class="calendar-vacation-official"';
+                      } else if (vacationInfo.type !== "سنوية") {
+                        liClass = 'class="calendar-vacation-other"';
+                      }
+                      return `<li ${liClass}>${vacationInfo.name}</li>`;
+                    })
+                    .join("")}</ul>`
+                : "";
+            dayCell.innerHTML = `<div class="day-number">${day}</div>${vacationHtml}`;
+            calendarDaysGrid.appendChild(dayCell);
+          }
+        };
+
+        const showOverallSummary = () => {
+          let grandTotalDays = 0;
+          const daysPerType = {};
+          const employeeTotals = [];
+
+          masterEmployeeList.forEach((employeeName) => {
+            const employeeVacations = allData[employeeName]?.vacations || [];
+            let employeeTotalDays = 0;
+
+            employeeVacations.forEach((vacation) => {
+              if (vacation.vacationType !== "اجازة رسمية") {
+                const start = new Date(vacation.startDate);
+                const end = new Date(vacation.endDate || vacation.startDate);
+                const diffTime = Math.abs(end - start);
+                const diffDays =
+                  Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1;
+
+                grandTotalDays += diffDays;
+                employeeTotalDays += diffDays;
+
+                const type = vacation.vacationType;
+                daysPerType[type] = (daysPerType[type] || 0) + diffDays;
+              }
+            });
+
+            employeeTotals.push({
+              name: employeeName,
+              totalDays: employeeTotalDays,
+            });
+          });
+
+          // Sort employees by total days
+          employeeTotals.sort((a, b) => b.totalDays - a.totalDays);
+
+          // Build HTML content for the modal
+          let contentHtml = `<div class="report-info" style="text-align: center; margin-bottom: 20px; font-size: 1.2em;"><strong>الإجمالي العام لكل الموظفين:</strong><span>${grandTotalDays} يوم</span></div>`;
+
+          // Column 1: Details by Type (sorted)
+          const typesHtml = Object.entries(daysPerType)
+            .sort(([, a], [, b]) => b - a)
+            .map(
+              ([type, days]) =>
+                `<div class="report-info"><strong>${type}:</strong><span>${days} يوم</span></div>`
+            )
+            .join("");
+          const column1Html = `<div class="summary-grid-column"><h4>تفصيل حسب النوع</h4>${typesHtml}</div>`;
+
+          // Column 2: Employee Ranking
+          const rankingHtml = employeeTotals
+            .map(
+              (emp, index) =>
+                `<div class="report-info"><strong>${index + 1}. ${
+                  emp.name
+                }:</strong><span>${emp.totalDays} يوم</span></div>`
+            )
+            .join("");
+          const column2Html = `<div class="summary-grid-column"><h4>ترتيب الموظفين (من الأكثر للأقل)</h4>${rankingHtml}</div>`;
+
+          // Combine into a grid
+          contentHtml += `<div class="summary-grid">${column1Html}${column2Html}</div>`;
+
+          overallSummaryContent.innerHTML = contentHtml;
+          overallSummaryModal.style.display = "block";
+
+          // Reset tabs to default
+          document
+            .querySelector('.modal-tab-btn[data-tab="summary"]')
+            .classList.add("active");
+          document
+            .querySelector('.modal-tab-btn[data-tab="calendar"]')
+            .classList.remove("active");
+          document.getElementById("summaryTabContent").classList.add("active");
+          document
+            .getElementById("calendarTabContent")
+            .classList.remove("active");
+
+          vacationsByDate = mapVacationsToDates();
+          calendarCurrentDate = new Date();
+          generateCalendar(calendarCurrentDate);
+        };
+
+        const updateVacationFilter = () => {
+          const vacationFilter = document.getElementById("vacationFilter");
+          vacationFilter.innerHTML = '<option value="all">عرض الكل</option>';
+
+          vacationTypeList.forEach((type) => {
+            const option = document.createElement("option");
+            option.value = type.name;
+            option.textContent = type.name;
+            vacationFilter.appendChild(option);
+          });
+
+          vacationFilter.value = currentVacationFilter;
+        };
+
+        const renderVacations = () => {
+          vacationsList.innerHTML = "";
+          const employeeVacations = [
+            ...(allData[currentEmployee]?.vacations || []),
+          ].reverse();
+
+          // تطبيق الفلتر
+          const filteredVacations =
+            currentVacationFilter === "all"
+              ? employeeVacations
+              : employeeVacations.filter(
+                  (vacation) => vacation.vacationType === currentVacationFilter
+                );
+
+          let totalDaysUsed = 0;
+
+          // حساب مجموع الأيام (من كل الإجازات وليس المفلترة فقط)
+          employeeVacations.forEach((vacation) => {
+            const start = new Date(vacation.startDate);
+            const end = new Date(vacation.endDate);
+            const diffTime = Math.abs(end - start);
+            const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1;
+            const vacationTypeDetails = vacationTypeList.find(
+              (t) => t.name === vacation.vacationType
+            );
+            if (vacationTypeDetails && vacationTypeDetails.deducts) {
+              totalDaysUsed += diffDays;
+            }
+          });
+
+          const displayLimit = showAllVacations ? filteredVacations.length : 5;
+          const vacationsToDisplay = filteredVacations.slice(0, displayLimit);
+
+          vacationsToDisplay.forEach((vacation, index) => {
+            const row = document.createElement("tr");
+            if (vacation.vacationType === "خصم") {
+              row.classList.add("deduction-day");
+            }
+
+            if (vacation.vacationType === "اجازة رسمية") {
+              row.classList.add("double-day");
+            }
+            // Find the index in the original (non-reversed) array to ensure correct deletion.
+            const originalIndex =
+              allData[currentEmployee].vacations.indexOf(vacation);
+
+            const startTd = document.createElement("td");
+            startTd.textContent = vacation.startDate;
+
+            const endTd = document.createElement("td");
+            endTd.textContent = vacation.endDate;
+
+            let commentCellContent;
+            if (vacation.comment && vacation.comment.length > 20) {
+              commentCellContent = `<button class="view-comment-btn" onclick="showCommentModal('${vacation.comment.replace(
+                /'/g,
+                "\\'"
+              )}')">عرض التعليق</button>`;
+            } else {
+              commentCellContent = vacation.comment || "";
+            }
+
+            row.innerHTML = `
+        <td>${vacation.vacationType}</td>
+        <td></td>
+        <td></td>
+        <td>${commentCellContent}</td>
+        <td><button onclick="deleteData('vacation', ${originalIndex})">حذف</button></td>
+      `;
+            vacationsList.appendChild(row);
+
+            row.querySelector("td:nth-child(2)").replaceWith(startTd);
+            row.querySelector("td:nth-child(3)").replaceWith(endTd);
+          });
+
+          // تحديث زر "عرض المزيد"
+          if (filteredVacations.length > 5) {
+            showMoreBtn.style.display = "block";
+            showMoreBtn.textContent = showAllVacations
+              ? "عرض أقل"
+              : `عرض المزيد (${filteredVacations.length - 5} إجازة)`;
+          } else {
+            showMoreBtn.style.display = "none";
+          }
+
+          totalDaysSpan.textContent = totalDaysUsed;
+          remainingDaysSpan.textContent = VACATION_LIMIT - totalDaysUsed;
+
+          // Add progress bar to main summary
+          const mainVacationProgressBarContainer = document.getElementById(
+            "mainVacationProgressBarContainer"
+          );
+          const remainingDays = VACATION_LIMIT - totalDaysUsed;
+          const percentage = Math.max(
+            0,
+            Math.round((remainingDays / VACATION_LIMIT) * 100)
+          );
+          let progressBarClass = "low";
+          if (percentage > 50) {
+            progressBarClass = "high";
+          } else if (percentage > 25) {
+            progressBarClass = "medium";
+          }
+          mainVacationProgressBarContainer.innerHTML = `
+              <div class="progress-bar-container">
+                  <div class="progress-bar-fill ${progressBarClass}" style="width: ${percentage}%;">${percentage}%</div>
+              </div>
+          `;
+        };
+
+        const renderPermissions = () => {
+          permissionsList.innerHTML = "";
+          const employeePermissions = [
+            ...(allData[currentEmployee]?.permissions || []),
+          ].reverse();
+
+          const displayLimit = showAllPermissions
+            ? employeePermissions.length
+            : 5;
+          const permissionsToDisplay = employeePermissions.slice(
+            0,
+            displayLimit
+          );
+
+          permissionsToDisplay.forEach((permission, index) => {
+            const row = document.createElement("tr");
+            const originalIndex = employeePermissions.length - 1 - index;
+            let commentCellContent;
+            if (permission.comment && permission.comment.length > 20) {
+              commentCellContent = `<button class="view-comment-btn" onclick="showCommentModal('${permission.comment.replace(
+                /'/g,
+                "\\'"
+              )}')">عرض التعليق</button>`;
+            } else {
+              commentCellContent = permission.comment || "";
+            }
+
+            row.innerHTML = `
+                          <td>${permission.permissionDate}</td>
+                          <td>${permission.permissionHours}</td>
+                          <td>${commentCellContent}</td>
+                          <td><button onclick="deleteData('permission', ${originalIndex})">حذف</button></td>
+                      `;
+            permissionsList.appendChild(row);
+          });
+
+          if (employeePermissions.length > 5) {
+            showMorePermissionsBtn.style.display = "block";
+            showMorePermissionsBtn.textContent = showAllPermissions
+              ? "عرض أقل"
+              : `عرض المزيد (${employeePermissions.length - 5} إذن)`;
+          } else {
+            showMorePermissionsBtn.style.display = "none";
+          }
+
+          const totalHours = calculateTotalPermissionHours();
+          totalPermissionHoursSpan.textContent = totalHours;
+          remainingPermissionHoursSpan.textContent = Math.max(
+            0,
+            PERMISSION_LIMIT - totalHours
+          );
+
+          // Add progress bar to main summary
+          const mainPermissionProgressBarContainer = document.getElementById(
+            "mainPermissionProgressBarContainer"
+          );
+          const remainingHours = PERMISSION_LIMIT - totalHours;
+          const percentage = Math.max(
+            0,
+            Math.round((remainingHours / PERMISSION_LIMIT) * 100)
+          );
+          let progressBarClass = "low";
+          if (percentage > 50) {
+            progressBarClass = "high";
+          } else if (percentage > 25) {
+            progressBarClass = "medium";
+          }
+          mainPermissionProgressBarContainer.innerHTML = `
+              <div class="progress-bar-container">
+                  <div class="progress-bar-fill ${progressBarClass}" style="width: ${percentage}%;">${percentage}%</div>
+              </div>
+          `;
+        };
+
+        showMoreBtn.addEventListener("click", () => {
+          showAllVacations = !showAllVacations;
+          renderVacations();
+        });
+
+        showMorePermissionsBtn.addEventListener("click", () => {
+          showAllPermissions = !showAllPermissions;
+          renderPermissions();
+        });
+
+        hoursButtons.forEach((button) => {
+          button.addEventListener("click", () => {
+            permissionHoursInput.value = button.dataset.hours;
+          });
+        });
+
+        overallVacationSummaryTitle.addEventListener(
+          "click",
+          showOverallSummary
+        );
+
+        overallSummaryModalCloseBtn.addEventListener("click", () => {
+          overallSummaryModal.style.display = "none";
+        });
+
+        const prevMonthBtn = document.getElementById("prevMonthBtn");
+        const nextMonthBtn = document.getElementById("nextMonthBtn");
+        const modalTabs = document.querySelectorAll(".modal-tab-btn");
+        const modalTabContents =
+          document.querySelectorAll(".modal-tab-content");
+
+        modalTabs.forEach((tab) => {
+          tab.addEventListener("click", () => {
+            modalTabs.forEach((t) => t.classList.remove("active"));
+            modalTabContents.forEach((c) => c.classList.remove("active"));
+            tab.classList.add("active");
+            document
+              .getElementById(`${tab.dataset.tab}TabContent`)
+              .classList.add("active");
+          });
+        });
+
+        prevMonthBtn.addEventListener("click", () => {
+          calendarCurrentDate.setMonth(calendarCurrentDate.getMonth() - 1);
+          generateCalendar(calendarCurrentDate);
+        });
+
+        nextMonthBtn.addEventListener("click", () => {
+          calendarCurrentDate.setMonth(calendarCurrentDate.getMonth() + 1);
+          generateCalendar(calendarCurrentDate);
+        });
+
+        const selectEmployee = (employeeName) => {
+          currentEmployee = employeeName;
+          employeeNameTitle.textContent = `بيانات الموظف: ${currentEmployee}`;
+          employeeDetailsSection.style.display = "block";
+          employeeReportBtn.style.display = "block";
+
+          const today = new Date();
+          const year = today.getFullYear();
+          const month = String(today.getMonth() + 1).padStart(2, "0");
+          const day = String(today.getDate()).padStart(2, "0");
+          permissionDateInput.value = `${year}-${month}-${day}`;
+
+          showAllVacations = false;
+          showAllPermissions = false;
+          showSection(currentSection);
+          updateVacationFilter();
+        };
+
+        const showSection = (sectionName) => {
+          currentSection = sectionName;
+          annualsBtn.classList.remove("active");
+          permissionsBtn.classList.remove("active");
+          annualsSection.classList.add("hidden-section");
+          permissionsSection.classList.add("hidden-section");
+
+          if (sectionName === "annuals") {
+            annualsBtn.classList.add("active");
+            annualsSection.classList.remove("hidden-section");
+          } else if (sectionName === "permissions") {
+            permissionsBtn.classList.add("active");
+            permissionsSection.classList.remove("hidden-section");
+          }
+          renderData();
+        };
+
+        annualsBtn.addEventListener("click", () => showSection("annuals"));
+        permissionsBtn.addEventListener("click", () =>
+          showSection("permissions")
+        );
+
+        viewVacationsBtn.addEventListener("click", () => {
+          if (!currentEmployee) return;
+
+          vacationListModalEmployeeName.textContent = currentEmployee;
+          const employeeVacations = [
+            ...(allData[currentEmployee]?.vacations || []),
+          ].reverse();
+
+          if (employeeVacations.length === 0) {
+            vacationListModalContent.innerHTML =
+              "<p>لا توجد إجازات مسجلة لهذا الموظف.</p>";
+          } else {
+            let tableHTML = `
+                <table>
+                    <thead>
+                        <tr>
+                            <th>النوع</th>
+                            <th>تاريخ البدء</th>
+                            <th>تاريخ الانتهاء</th>
+                            <th>التعليق</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+            `;
+            employeeVacations.forEach((vacation) => {
+              let rowClass = "";
+              if (vacation.vacationType === "خصم") {
+                rowClass = 'class="deduction-day"';
+              } else if (vacation.vacationType === "اجازة رسمية") {
+                rowClass = 'class="double-day"';
+              }
+
+              tableHTML += `
+                    <tr ${rowClass}>
+                        <td>${vacation.vacationType}</td>
+                        <td>${vacation.startDate}</td>
+                        <td>${vacation.endDate || vacation.startDate}</td>
+                        <td>${vacation.comment || "-"}</td>
+                    </tr>
+                `;
+            });
+            tableHTML += "</tbody></table>";
+            vacationListModalContent.innerHTML = tableHTML;
+          }
+
+          vacationListModal.style.display = "block";
+        });
+
+        employeeSelect.addEventListener("change", (e) => {
+          if (e.target.value) {
+            selectEmployee(e.target.value);
+          }
+        });
+
+        vacationForm.addEventListener("submit", (e) => {
+          e.preventDefault();
+
+          if (!currentEmployee) {
+            showMessage("يرجى اختيار موظف أولاً.", true);
+            return;
+          }
+
+          if (!allData[currentEmployee]) {
+            allData[currentEmployee] = { vacations: [], permissions: [] };
+          }
+
+          const newVacation = {
+            vacationType: vacationTypeSelect.value,
+            startDate: startDateInput.value,
+            // لو تاريخ الانتهاء فاضي نخلي قيمته نفس تاريخ البدء
+            endDate: endDateInput.value || startDateInput.value,
+            comment: commentInput.value,
+          };
+
+          const isDuplicate = allData[currentEmployee].vacations.some(
+            (vacation) =>
+              vacation.startDate === newVacation.startDate &&
+              vacation.endDate === newVacation.endDate
+          );
+
+          if (isDuplicate) {
+            duplicateWarningMessage.style.display = "block";
+            setTimeout(() => {
+              duplicateWarningMessage.style.display = "none";
+            }, 5000);
+            return;
+          }
+
+          allData[currentEmployee].vacations.push(newVacation);
+          saveData(allData);
+          renderVacations();
+          renderEmployeeVacationSummaries();
+          updateNotifications();
+          updateTopNotificationBar();
+          vacationForm.reset();
+          successMessage.style.display = "block";
+          setTimeout(() => {
+            successMessage.style.display = "none";
+          }, 3000);
+          warningMessage.style.display = "block";
+          setTimeout(() => {
+            warningMessage.style.display = "none";
+          }, 5000);
+        });
+
+        permissionForm.addEventListener("submit", (e) => {
+          e.preventDefault();
+
+          if (!currentEmployee) {
+            showMessage("يرجى اختيار موظف أولاً.", true);
+            return;
+          }
+
+          const newPermissionHours = parseFloat(permissionHoursInput.value);
+          const totalHours = calculateTotalPermissionHours();
+
+          if (totalHours + newPermissionHours > PERMISSION_LIMIT) {
+            permissionLimitWarning.style.display = "block";
+            setTimeout(() => {
+              permissionLimitWarning.style.display = "none";
+            }, 5000);
+            return;
+          }
+
+          const newPermission = {
+            permissionDate: permissionDateInput.value,
+            permissionHours: newPermissionHours,
+            comment: permissionCommentInput.value,
+          };
+
+          if (!allData[currentEmployee]) {
+            allData[currentEmployee] = { vacations: [], permissions: [] };
+          }
+
+          allData[currentEmployee].permissions.push(newPermission);
+          saveData(allData);
+
+          // Update UI
+          renderPermissions();
+          renderEmployeePermissionSummaries();
+          updateTopNotificationBar();
+          updateNotifications(); // This is the key call for notifications.
+
+          // Reset form and show messages
+          permissionForm.reset();
+          permissionDateInput.value = new Date().toISOString().split("T")[0]; // Reset date to today
+
+          permissionSuccessMessage.style.display = "block";
+          setTimeout(() => {
+            permissionSuccessMessage.style.display = "none";
+          }, 3000);
+        });
+
+        window.deleteData = (type, index) => {
+          const confirmation = confirm(
+            "هل أنت متأكد من رغبتك في حذف هذا البند؟"
+          );
+          if (confirmation) {
+            if (type === "vacation") {
+              allData[currentEmployee].vacations.splice(index, 1);
+              renderVacations();
+              renderEmployeeVacationSummaries();
+              updateTopNotificationBar();
+            } else if (type === "permission") {
+              allData[currentEmployee].permissions.splice(index, 1);
+              allData[currentEmployee].permissions = allData[
+                currentEmployee
+              ].permissions.filter((p) => p.permissionHours !== 0);
+              renderPermissions();
+              renderEmployeePermissionSummaries();
+              updateTopNotificationBar();
+            }
+            saveData(allData);
+            showMessage("تم الحذف بنجاح!");
+          }
+        };
+
+        window.selectEmployeeAndShowSection = (employeeName, section) => {
+          employeeSelect.value = employeeName;
+          selectEmployee(employeeName);
+          showSection(section);
+          employeeDetailsSection.scrollIntoView({
+            behavior: "smooth",
+            block: "start",
+          });
+        };
+
+        exportBtn.addEventListener("click", () => {
+          const data = {
+            employees: masterEmployeeList,
+            vacationTypes: vacationTypeList,
+            allEmployeeData: allData,
+          };
+          const jsonString = JSON.stringify(data, null, 2);
+          const blob = new Blob([jsonString], { type: "application/json" });
+          const url = URL.createObjectURL(blob);
+          const a = document.createElement("a");
+          a.href = url;
+
+          const now = new Date();
+          const dateString = now.toLocaleDateString("en-CA");
+          const timeString = now
+            .toLocaleTimeString("en-US", {
+              hour12: false,
+              hour: "2-digit",
+              minute: "2-digit",
+            })
+            .replace(/:/g, "_");
+
+          a.download = `Database_${dateString.replace(
+            /-/g,
+            "_"
+          )}_${timeString}.json`;
+
+          a.click();
+          URL.revokeObjectURL(url);
+          showMessage("تم تصدير قاعدة البيانات بنجاح!");
+          warningMessage.style.display = "none";
+        });
+
+        importBtn.addEventListener("click", () => {
+          jsonFileInput.click();
+        });
+
+        jsonFileInput.addEventListener("change", (event) => {
+          const file = event.target.files[0];
+          if (!file) {
+            return;
+          }
+
+          const reader = new FileReader();
+          reader.onload = (e) => {
+            try {
+              const importedData = JSON.parse(e.target.result);
+              if (
+                importedData.employees &&
+                importedData.vacationTypes &&
+                importedData.allEmployeeData
+              ) {
+                masterEmployeeList = importedData.employees;
+                vacationTypeList = importedData.vacationTypes;
+                allData = importedData.allEmployeeData;
+                saveData(allData); // يتم حفظ البيانات الجديدة في localStorage
+
+                // يتم تحديث العناصر بشكل مباشر بعد الاستيراد
+                renderEmployees();
+                renderVacationTypes();
+                renderEmployeeVacationSummaries();
+                renderEmployeePermissionSummaries();
+                renderNotifications();
+                updateNotifications();
+                updateTopNotificationBar();
+
+                if (masterEmployeeList.length > 0) {
+                  const firstEmployeeName = masterEmployeeList[0];
+                  employeeSelect.value = firstEmployeeName;
+                  selectEmployee(firstEmployeeName);
+                }
+
+                showMessage("✅ تم استيراد قاعدة البيانات بنجاح!");
+              } else {
+                showMessage("⚠️ تنسيق الملف غير صحيح.", true);
+              }
+            } catch (error) {
+              console.error("Failed to parse JSON:", error);
+              showMessage(
+                "⚠️ حدث خطأ أثناء قراءة الملف. يرجى التأكد من أنه ملف JSON صحيح.",
+                true
+              );
+            }
+          };
+          reader.readAsText(file);
+        });
+
+        window.showCommentModal = (comment) => {
+          const modal = document.getElementById("commentModal");
+          const modalText = document.getElementById("modalCommentText");
+          modalText.textContent = comment;
+          modal.style.display = "block";
+        };
+
+        const commentModal = document.getElementById("commentModal");
+        const closeBtn = commentModal.querySelector(".close-btn");
+        closeBtn.addEventListener("click", () => {
+          commentModal.style.display = "none";
+        });
+
+        window.addEventListener("click", (event) => {
+          if (event.target === commentModal)
+            commentModal.style.display = "none";
+          if (event.target === passwordModal)
+            passwordModal.style.display = "none";
+          if (event.target === reportModal) reportModal.style.display = "none";
+          if (event.target === settingsModal)
+            settingsModal.style.display = "none";
+          if (event.target === notificationModal)
+            notificationModal.style.display = "none";
+          if (event.target === overallSummaryModal)
+            overallSummaryModal.style.display = "none";
+          if (event.target === vacationListModal)
+            vacationListModal.style.display = "none";
+        });
+
+        vacationListModalCloseBtn.addEventListener("click", () => {
+          vacationListModal.style.display = "none";
+        });
+
+        window.addEventListener("beforeunload", (event) => {
+          event.preventDefault();
+          event.returnValue = "";
+        });
+
+        deletePermissionsBtn.addEventListener("click", (event) => {
+          const dropdown = document.querySelector(
+            ".delete-permissions-dropdown"
+          );
+          dropdown.classList.toggle("active");
+          event.stopPropagation();
+        });
+
+        deleteAllCurrentPermissionsBtn.addEventListener("click", () => {
+          if (!currentEmployee) {
+            showMessage("يرجى اختيار موظف أولاً.", true);
+            return;
+          }
+          passwordModal.style.display = "block";
+          passwordInput.value = "";
+          passwordIncorrectMessageInModal.style.display = "none";
+          deletionType = "current";
+          document
+            .querySelector(".delete-permissions-dropdown")
+            .classList.remove("active");
+        });
+
+        deleteAllPermissionsBtn.addEventListener("click", () => {
+          passwordModal.style.display = "block";
+          passwordInput.value = "";
+          passwordIncorrectMessageInModal.style.display = "none";
+          deletionType = "all";
+          document
+            .querySelector(".delete-permissions-dropdown")
+            .classList.remove("active");
+        });
+
+        passwordModalCloseBtn.addEventListener("click", () => {
+          passwordModal.style.display = "none";
+        });
+
+        confirmDeleteBtn.addEventListener("click", () => {
+          if (passwordInput.value === CORRECT_PASSWORD) {
+            if (deletionType === "current") {
+              allData[currentEmployee].permissions = [];
+            } else if (deletionType === "all") {
+              Object.keys(allData).forEach((employee) => {
+                allData[employee].permissions = [];
+              });
+            }
+            saveData(allData);
+            loadData();
+            passwordModal.style.display = "none";
+            showMessage(`تم حذف الأذونات بنجاح!`);
+          } else {
+            passwordIncorrectMessageInModal.style.display = "block";
+          }
+        });
+
+        document.addEventListener("click", (event) => {
+          const dropdown = document.querySelector(
+            ".delete-permissions-dropdown"
+          );
+          if (!dropdown.contains(event.target)) {
+            dropdown.classList.remove("active");
+          }
+        });
+
+        darkModeToggle.addEventListener("change", () => {
+          body.classList.toggle("dark-mode");
+          const isDarkMode = body.classList.contains("dark-mode");
+          toggleText.textContent = isDarkMode ? "Light Mode" : "Dark Mode";
+          localStorage.setItem("darkMode", isDarkMode);
+        });
+
+        const savedDarkMode = localStorage.getItem("darkMode");
+        if (savedDarkMode === "true") {
+          body.classList.add("dark-mode");
+          darkModeToggle.checked = true;
+          toggleText.textContent = "Light Mode";
+        }
+
+        // Report Modal Functions
+        employeeReportBtn.addEventListener("click", () => {
+          if (!currentEmployee) return;
+
+          const employeeData = allData[currentEmployee] || {
+            vacations: [],
+            permissions: [],
+          };
+          const employeeVacations = employeeData.vacations;
+
+          // Vacation Calculations
+          let totalVacationDays = 0;
+          const quarterlyVacations = {
+            q1: 0,
+            q2: 0,
+            q3: 0,
+            q4: 0,
+          };
+
+          employeeVacations.forEach((vacation) => {
+            const vacationTypeDetails = vacationTypeList.find(
+              (t) => t.name === vacation.vacationType
+            );
+            if (vacationTypeDetails && vacationTypeDetails.deducts) {
+              const start = new Date(vacation.startDate);
+              const end = new Date(vacation.endDate);
+              const diffTime = Math.abs(end - start);
+              const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1;
+              totalVacationDays += diffDays;
+
+              // الكود الجديد لحساب أيام الإجازات في كل ربع
+              let currentDate = new Date(start);
+              while (currentDate <= end) {
+                const month = currentDate.getMonth() + 1;
+                if (month >= 1 && month <= 3) {
+                  quarterlyVacations.q1++;
+                } else if (month >= 4 && month <= 6) {
+                  quarterlyVacations.q2++;
+                } else if (month >= 7 && month <= 9) {
+                  quarterlyVacations.q3++;
+                } else if (month >= 10 && month <= 12) {
+                  quarterlyVacations.q4++;
+                }
+                currentDate.setDate(currentDate.getDate() + 1);
+              }
+            }
+          });
+
+          // الكود الجديد لتحديث قسم الأرباع في تقرير الموظف
+          document.querySelector("#q1 span").textContent =
+            quarterlyVacations.q1;
+          document.querySelector("#q2 span").textContent =
+            quarterlyVacations.q2;
+          document.querySelector("#q3 span").textContent =
+            quarterlyVacations.q3;
+          document.querySelector("#q4 span").textContent =
+            quarterlyVacations.q4;
+
+          reportTotalVacationDays.textContent = totalVacationDays;
+          const remainingVacationDays = VACATION_LIMIT - totalVacationDays;
+          reportRemainingVacationDays.textContent = remainingVacationDays;
+
+          const vacationPercentage = Math.round(
+            (remainingVacationDays / VACATION_LIMIT) * 100
+          );
+
+          let acceptanceChanceText;
+          let chanceClassName;
+          if (vacationPercentage > 75) {
+            acceptanceChanceText = "قوية";
+            chanceClassName = "strong-chance";
+          } else if (vacationPercentage >= 50) {
+            acceptanceChanceText = "متوسطة";
+            chanceClassName = "medium-chance";
+          } else {
+            acceptanceChanceText = "ضعيفة";
+            chanceClassName = "weak-chance";
+          }
+
+          // Last Vacation Date & Days Since
+          let lastVacationDate = "لا توجد إجازات";
+          let daysSinceLastVacation = "0";
+          if (employeeVacations.length > 0) {
+            const sortedVacations = [...employeeVacations].sort(
+              (a, b) => new Date(b.endDate) - new Date(a.endDate)
+            );
+            const lastVacation = sortedVacations[0];
+            lastVacationDate = lastVacation.endDate;
+            const lastVacationEndDate = new Date(lastVacation.endDate);
+            const today = new Date();
+            const diffTime = Math.abs(today - lastVacationEndDate);
+            daysSinceLastVacation = Math.floor(
+              diffTime / (1000 * 60 * 60 * 24)
+            );
+          }
+
+          // Vacation Days by Type (sum days per type)
+          const vacationDaysByType = {};
+          employeeVacations.forEach((vac) => {
+            const start = new Date(vac.startDate);
+            const end = new Date(vac.endDate);
+            const diffTime = Math.abs(end - start);
+            const days = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1;
+
+            vacationDaysByType[vac.vacationType] =
+              (vacationDaysByType[vac.vacationType] || 0) + days;
+          });
+
+          const vacationTypesString =
+            Object.keys(vacationDaysByType).length > 0
+              ? Object.entries(vacationDaysByType)
+                  .map(([type, days]) => `${type} (${days} يوم)`)
+                  .join("، ")
+              : "لا توجد أنواع";
+
+          reportVacationTypes.textContent = vacationTypesString;
+
+          // Permission Calculations
+          let totalPermissionHours = employeeData.permissions.reduce(
+            (total, perm) => total + parseFloat(perm.permissionHours),
+            0
+          );
+          const remainingPermissionHours =
+            PERMISSION_LIMIT - totalPermissionHours;
+
+          // Populate Modal
+          reportEmployeeName.textContent = currentEmployee;
+          reportTotalVacationDays.textContent = totalVacationDays;
+          reportRemainingVacationDays.textContent = remainingVacationDays;
+          reportVacationPercentage.textContent = `${vacationPercentage}%`;
+
+          reportAcceptanceChance.textContent = acceptanceChanceText;
+          reportAcceptanceChance.className = "";
+          reportAcceptanceChance.classList.add("status-line");
+          reportAcceptanceChance.classList.add(chanceClassName);
+
+          reportLastVacationDate.textContent = lastVacationDate;
+          reportDaysSinceLastVacation.textContent = daysSinceLastVacation;
+          reportVacationTypes.textContent = vacationTypesString;
+
+          reportTotalPermissionHours.textContent = totalPermissionHours;
+
+          // Last Permission Date & Day
+          let lastPermissionDate = "لا توجد أذونات";
+          let lastPermissionDay = "-";
+
+          if (employeeData.permissions.length > 0) {
+            const sortedPermissions = [...employeeData.permissions].sort(
+              (a, b) => new Date(b.permissionDate) - new Date(a.permissionDate)
+            );
+
+            const lastPermission = sortedPermissions[0];
+            lastPermissionDate = lastPermission.permissionDate;
+
+            const dateObj = new Date(lastPermission.permissionDate);
+            const daysInArabic = [
+              "الأحد",
+              "الاثنين",
+              "الثلاثاء",
+              "الأربعاء",
+              "الخميس",
+              "الجمعة",
+              "السبت",
+            ];
+            lastPermissionDay = daysInArabic[dateObj.getDay()];
+          }
+
+          reportLastPermissionDate.textContent = lastPermissionDate;
+          reportLastPermissionDay.textContent = lastPermissionDay;
+
+          reportRemainingPermissionHours.textContent = remainingPermissionHours;
+
+          reportModal.style.display = "block";
+        });
+
+        reportModalCloseBtn.addEventListener("click", () => {
+          reportModal.style.display = "none";
+        });
+
+        // Settings Modal Functions
+        settingsBtn.addEventListener("click", () => {
+          settingsModal.style.display = "block";
+          renderSettingsLists();
+        });
+
+        settingsModalCloseBtn.addEventListener("click", () => {
+          settingsModal.style.display = "none";
+        });
+
+        // Employee sorting functions
+        const moveEmployeeUp = (index) => {
+          if (index > 0) {
+            const temp = masterEmployeeList[index];
+            masterEmployeeList[index] = masterEmployeeList[index - 1];
+            masterEmployeeList[index - 1] = temp;
+            saveData(allData);
+            renderEmployees();
+            renderSettingsLists();
+            renderEmployeeVacationSummaries();
+            renderEmployeePermissionSummaries();
+            showMessage("تم تحديث ترتيب الموظف!");
+          }
+        };
+
+        const moveEmployeeDown = (index) => {
+          if (index < masterEmployeeList.length - 1) {
+            const temp = masterEmployeeList[index];
+            masterEmployeeList[index] = masterEmployeeList[index + 1];
+            masterEmployeeList[index + 1] = temp;
+            saveData(allData);
+            renderEmployees();
+            renderSettingsLists();
+            renderEmployeeVacationSummaries();
+            renderEmployeePermissionSummaries();
+            showMessage("تم تحديث ترتيب الموظف!");
+          }
+        };
+
+        function renderSettingsLists() {
+          // Render Employee List with sorting buttons
+          employeeListUl.innerHTML = "";
+          masterEmployeeList.forEach((employee, index) => {
+            const li = document.createElement("li");
+            li.innerHTML = `
+                          <span class="employee-name">${employee}</span>
+                          <div class="button-group">
+                              <button class="sort-btn" data-index="${index}" data-action="up" ${
+              index === 0 ? "disabled" : ""
+            }>↑</button>
+                              <button class="sort-btn" data-index="${index}" data-action="down" ${
+              index === masterEmployeeList.length - 1 ? "disabled" : ""
+            }>↓</button>
+                              <button class="edit-btn" data-index="${index}" data-type="employee">تعديل</button>
+                              <button class="delete-btn" data-index="${index}" data-type="employee">حذف</button>
+                          </div>
+                      `;
+            employeeListUl.appendChild(li);
+          });
+
+          // Render Vacation Types List
+          vacationTypeListUl.innerHTML = "";
+          vacationTypeList.forEach((type, index) => {
+            const li = document.createElement("li");
+            li.innerHTML = `
+                          <span>${type.name} <small>(${
+              type.deducts ? "يخصم" : "لا يخصم"
+            })</small></span>
+                          <div>
+                              <button class="edit-btn" data-index="${index}" data-type="vacation">تعديل</button>
+                              <button class="delete-btn" data-index="${index}" data-type="vacation">حذف</button>
+                          </div>
+                      `;
+            vacationTypeListUl.appendChild(li);
+          });
+        }
+
+        // Handle Add Forms
+        addEmployeeForm.addEventListener("submit", (e) => {
+          e.preventDefault();
+          const newName = newEmployeeNameInput.value.trim();
+          if (newName && !masterEmployeeList.includes(newName)) {
+            masterEmployeeList.push(newName);
+            allData[newName] = { vacations: [], permissions: [] };
+            saveData(allData);
+            renderEmployees();
+            renderSettingsLists();
+            newEmployeeNameInput.value = "";
+            employeeMessage.textContent = "تم إضافة الموظف بنجاح!";
+            employeeMessage.style.color = "#28a745";
+            renderEmployeeVacationSummaries();
+            renderEmployeePermissionSummaries();
+          } else {
+            employeeMessage.textContent =
+              "اسم الموظف موجود بالفعل أو غير صالح.";
+            employeeMessage.style.color = "#dc3545";
+          }
+          setTimeout(() => (employeeMessage.textContent = ""), 3000);
+        });
+
+        addVacationTypeForm.addEventListener("submit", (e) => {
+          e.preventDefault();
+          const newType = newVacationTypeInput.value.trim();
+          const deducts = document.getElementById("newVacationDeducts").checked;
+          if (newType && !vacationTypeList.some((t) => t.name === newType)) {
+            vacationTypeList.push({ name: newType, deducts: deducts });
+            saveData(allData);
+            renderVacationTypes();
+            renderSettingsLists();
+            newVacationTypeInput.value = "";
+            document.getElementById("newVacationDeducts").checked = false;
+            vacationTypeMessage.textContent = "تم إضافة نوع الإجازة بنجاح!";
+            vacationTypeMessage.style.color = "#28a745";
+          } else {
+            vacationTypeMessage.textContent =
+              "نوع الإجازة موجود بالفعل أو غير صالح.";
+            vacationTypeMessage.style.color = "#dc3545";
+          }
+          setTimeout(() => (vacationTypeMessage.textContent = ""), 3000);
+        });
+
+        // Handle Edit/Delete/Sort Buttons
+        document.addEventListener("click", (e) => {
+          // Handle sorting buttons
+          if (e.target.classList.contains("sort-btn")) {
+            const index = parseInt(e.target.dataset.index);
+            const action = e.target.dataset.action;
+
+            if (action === "up") {
+              moveEmployeeUp(index);
+            } else if (action === "down") {
+              moveEmployeeDown(index);
+            }
+            return;
+          }
+
+          if (e.target.classList.contains("edit-btn")) {
+            const type = e.target.dataset.type;
+            const index = e.target.dataset.index;
+            if (type === "employee") {
+              const oldName = masterEmployeeList[index];
+              const newName = prompt(`تعديل اسم الموظف "${oldName}":`, oldName);
+              if (newName && newName.trim() !== oldName) {
+                if (masterEmployeeList.includes(newName.trim())) {
+                  alert("هذا الاسم موجود بالفعل!");
+                  return;
+                }
+                const employeeData = allData[oldName];
+                delete allData[oldName];
+                allData[newName.trim()] = employeeData;
+                masterEmployeeList[index] = newName.trim();
+                saveData(allData);
+                renderEmployees();
+                renderSettingsLists();
+                if (currentEmployee === oldName) {
+                  selectEmployee(newName.trim());
+                }
+                renderEmployeeVacationSummaries();
+                renderEmployeePermissionSummaries();
+                showMessage("تم تعديل اسم الموظف بنجاح!");
+              }
+            } else if (type === "vacation") {
+              const typeObject = vacationTypeList[index];
+              const oldName = typeObject.name;
+
+              const newName = prompt(
+                `تعديل اسم الإجازة "${oldName}":`,
+                oldName
+              );
+
+              if (newName && newName.trim()) {
+                const trimmedNewName = newName.trim();
+                // Check for duplicates only if the name has changed
+                if (
+                  trimmedNewName !== oldName &&
+                  vacationTypeList.some((t) => t.name === trimmedNewName)
+                ) {
+                  alert("هذا الاسم موجود بالفعل!");
+                  return;
+                }
+
+                const newDeducts = confirm(
+                  `هل هذا النوع "${trimmedNewName}" يخصم من الرصيد؟\n(اضغط 'OK' ليخصم, 'Cancel' ل لا يخصم)`
+                );
+
+                // Update vacation records in allData if name changed
+                if (trimmedNewName !== oldName) {
+                  Object.values(allData).forEach((employee) => {
+                    employee.vacations.forEach((vac) => {
+                      if (vac.vacationType === oldName) {
+                        vac.vacationType = trimmedNewName;
+                      }
+                    });
+                  });
+                }
+
+                // Update the vacationTypeList
+                vacationTypeList[index] = {
+                  name: trimmedNewName,
+                  deducts: newDeducts,
+                };
+
+                saveData(allData);
+                renderVacationTypes();
+                renderSettingsLists();
+                if (currentEmployee) renderVacations();
+                renderEmployeeVacationSummaries();
+                updateTopNotificationBar();
+                showMessage("تم تعديل نوع الإجازة بنجاح!");
+              }
+            }
+          }
+
+          if (e.target.classList.contains("delete-btn")) {
+            const type = e.target.dataset.type;
+            const index = e.target.dataset.index;
+            if (type === "employee") {
+              const employeeName = masterEmployeeList[index];
+              if (
+                confirm(
+                  `هل أنت متأكد من حذف الموظف "${employeeName}" وجميع بياناته؟`
+                )
+              ) {
+                delete allData[employeeName];
+                masterEmployeeList.splice(index, 1);
+                saveData(allData);
+                renderEmployees();
+                renderSettingsLists();
+                if (currentEmployee === employeeName) {
+                  employeeDetailsSection.style.display = "none";
+                  employeeSelect.value = "";
+                  currentEmployee = null;
+                }
+                renderEmployeeVacationSummaries();
+                renderEmployeePermissionSummaries();
+                updateTopNotificationBar();
+                showMessage("تم حذف الموظف بنجاح!");
+              }
+            } else if (type === "vacation") {
+              const vacationTypeName = vacationTypeList[index].name;
+              if (
+                confirm(
+                  `هل أنت متأكد من حذف نوع الإجازة "${vacationTypeName}"؟`
+                )
+              ) {
+                vacationTypeList.splice(index, 1);
+                saveData(allData);
+                renderVacationTypes();
+                renderSettingsLists();
+                showMessage("تم حذف نوع الإجازة بنجاح!");
+              }
+            }
+          }
+        });
+
+        let notifications = [];
+
+        function buildNotifications() {
+          const items = [];
+          masterEmployeeList.forEach((name) => {
+            const data = allData[name] || { vacations: [], permissions: [] };
+
+            // الأذونات
+            const totalPerm = data.permissions.reduce(
+              (s, p) => s + parseFloat(p.permissionHours || 0),
+              0
+            );
+            let notificationText;
+            if (PERMISSION_LIMIT - totalPerm === 0) {
+              notificationText = `${name}: استهلك كل ساعات الإذن`;
+              if (!dismissedNotifications.includes(notificationText))
+                items.push({ text: notificationText });
+            }
+            if (PERMISSION_LIMIT - totalPerm === 0.5) {
+              notificationText = `${name}: متبقي نصف ساعة إذن فقط`;
+              if (!dismissedNotifications.includes(notificationText))
+                items.push({ text: notificationText });
+            }
+
+            // الإجازات
+            const usedDays = data.vacations.reduce((sum, v) => {
+              const vacationTypeDetails = vacationTypeList.find(
+                (t) => t.name === v.vacationType
+              );
+              if (vacationTypeDetails && vacationTypeDetails.deducts) {
+                const end = v.endDate || v.startDate;
+                return (
+                  sum +
+                  ((new Date(end) - new Date(v.startDate)) /
+                    (1000 * 60 * 60 * 24) +
+                    1)
+                );
+              }
+              return sum;
+            }, 0);
+            if (VACATION_LIMIT - usedDays <= 0) {
+              notificationText = `${name}: أنهى رصيد الإجازات`;
+              if (!dismissedNotifications.includes(notificationText))
+                items.push({ text: notificationText });
+            }
+          });
+          notifications = items;
+          return items;
+        }
+
+        function renderNotifications() {
+          if (notifications.length === 0) {
+            notificationList.innerHTML = "<li>لا توجد تنبيهات</li>";
+            notificationBtn.classList.remove("alert");
+            return;
+          }
+          notificationBtn.classList.add("alert");
+          notificationList.innerHTML = notifications
+            .map(
+              (n, idx) =>
+                `<li>${n.text} <button class="mark-read" data-idx="${idx}">✔</button></li>`
+            )
+            .join("");
+
+          document.querySelectorAll(".mark-read").forEach((btn) => {
+            btn.addEventListener("click", (e) => {
+              const i = parseInt(e.target.getAttribute("data-idx"));
+              const notificationText = notifications[i].text;
+              if (!dismissedNotifications.includes(notificationText)) {
+                dismissedNotifications.push(notificationText);
+              }
+              saveData(allData);
+              updateNotifications();
+            });
+          });
+        }
+
+        const notificationBtn = document.getElementById("notificationBtn");
+        const notificationModal = document.getElementById("notificationModal");
+        const notificationList = document.getElementById("notificationList");
+        const notificationModalCloseBtn = document.getElementById(
+          "notificationModalCloseBtn"
+        );
+
+        notificationBtn.addEventListener("click", () => {
+          buildNotifications();
+          renderNotifications();
+          notificationModal.style.display = "block";
+        });
+
+        notificationModalCloseBtn.addEventListener("click", () => {
+          notificationModal.style.display = "none";
+        });
+
+        function updateNotifications() {
+          buildNotifications(); // يبني قائمة التنبيهات
+          renderNotifications(); // يعرضها ويحدث حالة الزر (أحمر/طبيعي)
+        }
+
+        loadData();
+        renderNotifications();
+        updateNotifications();
+        updateTopNotificationBar();
+
+        // Event listeners for the new top notification bar controls
+        closeTopNotificationBtn.addEventListener("click", () => {
+          topNotificationBar.style.display = "none";
+          showTopNotificationArrow.style.display = "block";
+        });
+
+        showTopNotificationArrow.addEventListener("click", () => {
+          topNotificationBar.style.display = "block";
+          showTopNotificationArrow.style.display = "none";
+        });
+
+        // --- File System Access API for Auto-Save ---
+        const linkDbBtn = document.getElementById("linkDbBtn");
+        if (linkDbBtn) {
+          linkDbBtn.addEventListener("click", async () => {
+            if (!("showOpenFilePicker" in window)) {
+              showMessage(
+                "متصفحك لا يدعم هذه الميزة. يرجى استخدام متصفح حديث مثل Chrome أو Edge.",
+                true
+              );
+              return;
+            }
+
+            try {
+              const [handle] = await window.showOpenFilePicker({
+                types: [
+                  {
+                    description: "JSON Database File",
+                    accept: { "application/json": [".json"] },
+                  },
+                ],
+                multiple: false,
+              });
+
+              const file = await handle.getFile();
+              const content = await file.text();
+              const importedData = JSON.parse(content);
+
+              if (
+                importedData.employees &&
+                importedData.vacationTypes &&
+                importedData.allEmployeeData
+              ) {
+                masterEmployeeList = importedData.employees;
+                vacationTypeList = importedData.vacationTypes;
+                allData = importedData.allEmployeeData;
+                saveData(allData); // Save to localStorage as well
+
+                renderEmployees();
+                renderVacationTypes();
+                renderEmployeeVacationSummaries();
+                renderEmployeePermissionSummaries();
+                renderNotifications();
+                updateNotifications();
+                updateTopNotificationBar();
+
+                if (masterEmployeeList.length > 0) {
+                  const firstEmployeeName = masterEmployeeList[0];
+                  employeeSelect.value = firstEmployeeName;
+                  selectEmployee(firstEmployeeName);
+                }
+
+                dbFileHandle = handle;
+                dbStatusElement.textContent = `✅ مرتبط بالملف: ${dbFileHandle.name}`;
+                dbStatusElement.style.color = "#28a745";
+                showMessage(
+                  "تم ربط الملف وتحميل بياناته بنجاح. سيتم الآن حفظ التغييرات تلقائياً.",
+                  false
+                );
+              } else {
+                showMessage("⚠️ تنسيق الملف غير صحيح.", true);
+                dbFileHandle = null;
+                dbStatusElement.textContent =
+                  "⚠️ فشل ربط الملف. الحفظ التلقائي غير نشط.";
+                dbStatusElement.style.color = "#dc3545";
+              }
+            } catch (err) {
+              if (err.name !== "AbortError") {
+                console.error("Error linking database file:", err);
+                showMessage("حدث خطأ أثناء محاولة ربط الملف.", true);
+                dbFileHandle = null; // Ensure handle is null on error
+                dbStatusElement.textContent =
+                  "⚠️ فشل ربط الملف. الحفظ التلقائي غير نشط.";
+                dbStatusElement.style.color = "#dc3545";
+              }
+            }
+          });
+        }
+      });
+    </script>
+  <!-- Auto-import Firebase data script (appended to make the page 'online' with your Firebase project). -->
+<script type="module">
+  const firebaseConfig = {"apiKey": "AIzaSyAbis-28The-iQAAQnxz9sjq9YByqzXG1s", "authDomain": "project-5313879905007472742.firebaseapp.com", "projectId": "project-5313879905007472742", "storageBucket": "project-5313879905007472742.firebasestorage.app", "messagingSenderId": "330795618635", "appId": "1:330795618635:web:f2a47ea8e1469b8daa98ce", "measurementId": "G-4SN9B59N0K"};
+  const EMBEDDED_JSON = {"employees": ["مروان حمد", "احمد العسال", "محمد سليمان", "صفوت شلبي", "احمد الشربيني", "تقى عبدالله", "نورهان هاني", "محمد صلاح", "مصطفى بركات", "احمد الطنيخي", "ريهام بطراوي", "صابرين عبد المقصود"], "vacationTypes": [{"name": "سنوية", "deducts": true}, {"name": "مرضية", "deducts": false}, {"name": "اجازة وضع", "deducts": false}, {"name": "بدون راتب", "deducts": false}, {"name": "خصم", "deducts": true}, {"name": "اجازة رسمية", "deducts": false}], "allEmployeeData": {"محمد سليمان": {"vacations": [{"vacationType": "سنوية", "startDate": "2025-01-17", "endDate": "2025-01-17", "comment": ""}, {"vacationType": "سنوية", "startDate": "2024-01-26", "endDate": "2024-01-26", "comment": ""}, {"vacationType": "سنوية", "startDate": "2025-01-31", "endDate": "2025-01-31", "comment": ""}, {"vacationType": "سنوية", "startDate": "2025-02-15", "endDate": "2025-02-15", "comment": ""}, {"vacationType": "سنوية", "startDate": "2025-02-24", "endDate": "2025-02-24", "comment": ""}, {"vacationType": "سنوية", "startDate": "2025-06-16", "endDate": "2025-06-16", "comment": ""}, {"vacationType": "سنوية", "startDate": "2025-06-19", "endDate": "2025-06-19", "comment": ""}, {"vacationType": "سنوية", "startDate": "2025-06-24", "endDate": "2025-06-25", "comment": ""}, {"vacationType": "سنوية", "startDate": "2025-08-01", "endDate": "2025-08-01", "comment": ""}, {"vacationType": "سنوية", "startDate": "2025-08-24", "endDate": "2025-08-24", "comment": ""}, {"vacationType": "سنوية", "startDate": "2025-08-25", "endDate": "2025-08-25", "comment": ""}, {"vacationType": "خصم", "startDate": "2025-03-04", "endDate": "2025-03-05", "comment": "Target penalty Jan 2025 as per Rahhal\n\n"}, {"vacationType": "خصم", "startDate": "2025-05-13", "endDate": "2025-05-13", "comment": "Missing April Quiz\t"}, {"vacationType": "سنوية", "startDate": "2025-09-25", "endDate": "2025-09-26", "comment": ""}], "permissions": [{"permissionDate": "2025-10-05", "permissionHours": 0.5, "comment": ""}, {"permissionDate": "2025-10-15", "permissionHours": 0.5, "comment": ""}]}, "احمد الشربيني": {"vacations": [{"vacationType": "سنوية", "startDate": "2025-01-29", "endDate": "2025-01-29", "comment": ""}, {"vacationType": "سنوية", "startDate": "2025-02-11", "endDate": "2025-02-11", "comment": ""}, {"vacationType": "سنوية", "startDate": "2025-02-22", "endDate": "2025-02-22", "comment": ""}, {"vacationType": "سنوية", "startDate": "2025-04-09", "endDate": "2025-04-09", "comment": ""}, {"vacationType": "سنوية", "startDate": "2025-04-28", "endDate": "2025-04-28", "comment": ""}, {"vacationType": "سنوية", "startDate": "2025-05-25", "endDate": "2025-05-25", "comment": ""}, {"vacationType": "سنوية", "startDate": "2025-07-29", "endDate": "2025-07-30", "comment": ""}, {"vacationType": "سنوية", "startDate": "2025-08-13", "endDate": "2025-08-13", "comment": ""}, {"vacationType": "سنوية", "startDate": "2025-08-26", "endDate": "2025-08-26", "comment": ""}, {"vacationType": "سنوية", "startDate": "2025-09-14", "endDate": "2025-09-14", "comment": ""}, {"vacationType": "سنوية", "startDate": "2025-09-15", "endDate": "2025-09-15", "comment": ""}, {"vacationType": "سنوية", "startDate": "2025-09-29", "endDate": "2025-09-29", "comment": ""}, {"vacationType": "سنوية", "startDate": "2025-10-03", "endDate": "2025-10-03", "comment": ""}, {"vacationType": "سنوية", "startDate": "2025-10-22", "endDate": "2025-10-22", "comment": ""}], "permissions": [{"permissionDate": "2025-10-08", "permissionHours": 2, "comment": ""}, {"permissionDate": "2025-10-12", "permissionHours": 1, "comment": ""}]}, "محمد صلاح": {"vacations": [{"vacationType": "سنوية", "startDate": "2025-01-12", "endDate": "2025-01-12", "comment": ""}, {"vacationType": "سنوية", "startDate": "2025-01-22", "endDate": "2025-01-22", "comment": ""}, {"vacationType": "سنوية", "startDate": "2025-02-05", "endDate": "2025-02-05", "comment": ""}, {"vacationType": "سنوية", "startDate": "2025-02-14", "endDate": "2025-02-14", "comment": ""}, {"vacationType": "سنوية", "startDate": "2025-02-18", "endDate": "2025-02-18", "comment": ""}, {"vacationType": "سنوية", "startDate": "2025-03-01", "endDate": "2025-03-01", "comment": ""}, {"vacationType": "سنوية", "startDate": "2025-04-12", "endDate": "2025-04-12", "comment": ""}, {"vacationType": "سنوية", "startDate": "2025-05-14", "endDate": "2025-05-14", "comment": ""}, {"vacationType": "سنوية", "startDate": "2025-06-15", "endDate": "2025-06-15", "comment": ""}, {"vacationType": "سنوية", "startDate": "2025-06-24", "endDate": "2025-06-24", "comment": ""}, {"vacationType": "سنوية", "startDate": "2025-07-23", "endDate": "2025-07-23", "comment": ""}, {"vacationType": "سنوية", "startDate": "2025-09-08", "endDate": "2025-09-08", "comment": ""}, {"vacationType": "سنوية", "startDate": "2025-09-16", "endDate": "2025-09-17", "comment": ""}, {"vacationType": "مرضية", "startDate": "2025-09-10", "endDate": "2025-09-12", "comment": "مرضي 3 ايام من يوم 10 الي 12 سبتمبر"}, {"vacationType": "خصم", "startDate": "2025-10-06", "endDate": "2025-10-06", "comment": "متأخر يومين ورا بعض"}, {"vacationType": "سنوية", "startDate": "2025-10-11", "endDate": "2025-10-11", "comment": ""}], "permissions": [{"permissionDate": "2025-10-05", "permissionHours": 2, "comment": ""}, {"permissionDate": "2025-10-15", "permissionHours": 2, "comment": ""}]}, "صفوت شلبي": {"vacations": [{"vacationType": "سنوية", "startDate": "2025-01-06", "endDate": "2025-01-06", "comment": ""}, {"vacationType": "سنوية", "startDate": "2025-02-12", "endDate": "2025-02-12", "comment": ""}, {"vacationType": "سنوية", "startDate": "2025-02-25", "endDate": "2025-02-26", "comment": ""}, {"vacationType": "سنوية", "startDate": "2025-04-05", "endDate": "2025-04-05", "comment": ""}, {"vacationType": "سنوية", "startDate": "2025-04-22", "endDate": "2025-04-23", "comment": ""}, {"vacationType": "سنوية", "startDate": "2025-04-27", "endDate": "2025-04-27", "comment": ""}, {"vacationType": "سنوية", "startDate": "2025-06-04", "endDate": "2025-06-04", "comment": ""}, {"vacationType": "سنوية", "startDate": "2025-06-17", "endDate": "2025-06-18", "comment": "خصم بسبب موضوع عقود تغير الشريحه بتاريخ 18/6"}, {"vacationType": "سنوية", "startDate": "2025-08-22", "endDate": "2025-08-22", "comment": ""}, {"vacationType": "سنوية", "startDate": "2025-08-31", "endDate": "2025-08-31", "comment": ""}, {"vacationType": "سنوية", "startDate": "2025-09-01", "endDate": "2025-09-01", "comment": ""}, {"vacationType": "سنوية", "startDate": "2025-09-20", "endDate": "2025-09-20", "comment": ""}, {"vacationType": "سنوية", "startDate": "2025-09-23", "endDate": "2025-09-23", "comment": ""}, {"vacationType": "سنوية", "startDate": "2025-09-24", "endDate": "2025-09-24", "comment": ""}], "permissions": [{"permissionDate": "2025-10-13", "permissionHours": 2, "comment": ""}]}, "مصطفى بركات": {"vacations": [{"vacationType": "سنوية", "startDate": "2025-01-13", "endDate": "2025-01-13", "comment": ""}, {"vacationType": "سنوية", "startDate": "2025-01-30", "endDate": "2025-01-30", "comment": ""}, {"vacationType": "سنوية", "startDate": "2025-03-02", "endDate": "2025-03-03", "comment": ""}, {"vacationType": "سنوية", "startDate": "2025-05-11", "endDate": "2025-05-11", "comment": ""}, {"vacationType": "سنوية", "startDate": "2025-08-27", "endDate": "2025-08-27", "comment": ""}, {"vacationType": "سنوية", "startDate": "2025-09-18", "endDate": "2025-09-18", "comment": ""}, {"vacationType": "سنوية", "startDate": "2025-09-28", "endDate": "2025-09-28", "comment": ""}, {"vacationType": "سنوية", "startDate": "2025-10-13", "endDate": "2025-10-13", "comment": ""}], "permissions": []}, "مروان حمد": {"vacations": [{"vacationType": "سنوية", "startDate": "2025-01-29", "endDate": "2025-01-29", "comment": ""}, {"vacationType": "سنوية", "startDate": "2025-02-08", "endDate": "2025-02-08", "comment": ""}, {"vacationType": "سنوية", "startDate": "2025-02-22", "endDate": "2025-02-22", "comment": ""}, {"vacationType": "سنوية", "startDate": "2025-02-25", "endDate": "2025-02-25", "comment": ""}, {"vacationType": "سنوية", "startDate": "2025-04-03", "endDate": "2025-04-03", "comment": ""}, {"vacationType": "سنوية", "startDate": "2025-05-02", "endDate": "2025-05-02", "comment": ""}, {"vacationType": "سنوية", "startDate": "2025-05-20", "endDate": "2025-05-21", "comment": ""}, {"vacationType": "سنوية", "startDate": "2025-05-25", "endDate": "2025-05-26", "comment": ""}, {"vacationType": "سنوية", "startDate": "2025-05-29", "endDate": "2025-05-29", "comment": ""}, {"vacationType": "سنوية", "startDate": "2025-06-28", "endDate": "2025-06-28", "comment": ""}, {"vacationType": "سنوية", "startDate": "2025-07-10", "endDate": "2025-07-10", "comment": ""}, {"vacationType": "سنوية", "startDate": "2025-07-20", "endDate": "2025-07-20", "comment": ""}, {"vacationType": "سنوية", "startDate": "2025-07-26", "endDate": "2025-07-26", "comment": ""}, {"vacationType": "سنوية", "startDate": "2025-08-03", "endDate": "2025-08-03", "comment": ""}, {"vacationType": "سنوية", "startDate": "2025-09-06", "endDate": "2025-09-06", "comment": ""}, {"vacationType": "سنوية", "startDate": "2025-09-28", "endDate": "2025-09-28", "comment": ""}, {"vacationType": "سنوية", "startDate": "2025-10-02", "endDate": "2025-10-02", "comment": ""}, {"vacationType": "سنوية", "startDate": "2025-10-16", "endDate": "2025-10-16", "comment": ""}, {"vacationType": "سنوية", "startDate": "2025-10-13", "endDate": "2025-10-13", "comment": ""}], "permissions": []}, "نورهان هاني": {"vacations": [{"vacationType": "سنوية", "startDate": "2025-01-10", "endDate": "2025-01-10", "comment": ""}, {"vacationType": "سنوية", "startDate": "2025-01-24", "endDate": "2025-01-24", "comment": ""}, {"vacationType": "سنوية", "startDate": "2025-02-17", "endDate": "2025-02-17", "comment": ""}, {"vacationType": "سنوية", "startDate": "2025-04-04", "endDate": "2025-04-04", "comment": ""}, {"vacationType": "سنوية", "startDate": "2025-06-03", "endDate": "2025-06-03", "comment": ""}, {"vacationType": "سنوية", "startDate": "2025-08-23", "endDate": "2025-08-23", "comment": ""}, {"vacationType": "سنوية", "startDate": "2025-09-01", "endDate": "2025-09-01", "comment": ""}, {"vacationType": "مرضية", "startDate": "2025-04-05", "endDate": "2025-04-18", "comment": "مرضى 14 يوم"}, {"vacationType": "مرضية", "startDate": "2025-05-05", "endDate": "2025-05-07", "comment": "مرضى 3 ايام"}, {"vacationType": "مرضية", "startDate": "2025-08-16", "endDate": "2025-08-18", "comment": "مرضى 3 ايام"}, {"vacationType": "مرضية", "startDate": "2025-09-14", "endDate": "2025-09-27", "comment": "مرضى 14 يوم"}, {"vacationType": "سنوية", "startDate": "2025-10-04", "endDate": "2025-10-04", "comment": ""}, {"vacationType": "سنوية", "startDate": "2025-10-16", "endDate": "2025-10-16", "comment": ""}, {"vacationType": "سنوية", "startDate": "2025-10-17", "endDate": "2025-10-17", "comment": ""}, {"vacationType": "سنوية", "startDate": "2025-10-18", "endDate": "2025-10-18", "comment": ""}], "permissions": [{"permissionDate": "2025-10-08", "permissionHours": 1.5, "comment": ""}, {"permissionDate": "2025-10-03", "permissionHours": 1, "comment": ""}, {"permissionDate": "2025-10-12", "permissionHours": 1.5, "comment": ""}]}, "احمد الطنيخي": {"vacations": [{"vacationType": "سنوية", "startDate": "2025-01-13", "endDate": "2025-01-13", "comment": ""}, {"vacationType": "سنوية", "startDate": "2025-02-10", "endDate": "2025-02-10", "comment": ""}, {"vacationType": "سنوية", "startDate": "2025-03-19", "endDate": "2025-03-19", "comment": ""}, {"vacationType": "سنوية", "startDate": "2025-04-10", "endDate": "2025-04-10", "comment": ""}, {"vacationType": "سنوية", "startDate": "2025-07-15", "endDate": "2025-07-15", "comment": ""}, {"vacationType": "خصم", "startDate": "2025-08-21", "endDate": "2025-08-22", "comment": "خصم يومين لبيع خط محجوز21&22"}, {"vacationType": "سنوية", "startDate": "2025-09-21", "endDate": "2025-09-21", "comment": ""}, {"vacationType": "سنوية", "startDate": "2025-10-10", "endDate": "2025-10-10", "comment": ""}], "permissions": []}, "احمد العسال": {"vacations": [{"vacationType": "سنوية", "startDate": "2025-01-08", "endDate": "2025-01-08", "comment": ""}, {"vacationType": "سنوية", "startDate": "2025-02-14", "endDate": "2025-02-14", "comment": ""}, {"vacationType": "سنوية", "startDate": "2025-02-27", "endDate": "2025-02-27", "comment": ""}, {"vacationType": "سنوية", "startDate": "2025-03-13", "endDate": "2025-03-13", "comment": ""}, {"vacationType": "سنوية", "startDate": "2025-05-04", "endDate": "2025-05-04", "comment": ""}, {"vacationType": "سنوية", "startDate": "2025-05-23", "endDate": "2025-05-23", "comment": "Deduction 1 day Case (1505162225)"}, {"vacationType": "سنوية", "startDate": "2025-06-02", "endDate": "2025-06-02", "comment": ""}, {"vacationType": "سنوية", "startDate": "2025-06-10", "endDate": "2025-06-10", "comment": ""}, {"vacationType": "سنوية", "startDate": "2025-06-30", "endDate": "2025-06-30", "comment": ""}, {"vacationType": "سنوية", "startDate": "2025-07-05", "endDate": "2025-07-05", "comment": ""}, {"vacationType": "سنوية", "startDate": "2025-08-10", "endDate": "2025-08-11", "comment": ""}, {"vacationType": "سنوية", "startDate": "2025-08-14", "endDate": "2025-08-16", "comment": ""}, {"vacationType": "سنوية", "startDate": "2025-09-07", "endDate": "2025-09-07", "comment": ""}, {"vacationType": "سنوية", "startDate": "2025-09-22", "endDate": "2025-09-22", "comment": ""}, {"vacationType": "سنوية", "startDate": "2025-10-06", "endDate": "2025-10-06", "comment": ""}], "permissions": [{"permissionDate": "2025-10-15", "permissionHours": 1, "comment": ""}]}, "ريهام بطراوي": {"vacations": [{"vacationType": "سنوية", "startDate": "2025-07-27", "endDate": "2025-07-27", "comment": ""}, {"vacationType": "سنوية", "startDate": "2025-08-26", "endDate": "2025-08-26", "comment": ""}, {"vacationType": "سنوية", "startDate": "2025-06-16", "endDate": "2025-06-16", "comment": ""}, {"vacationType": "سنوية", "startDate": "2025-07-17", "endDate": "2025-07-17", "comment": ""}, {"vacationType": "سنوية", "startDate": "2025-08-14", "endDate": "2025-08-14", "comment": ""}, {"vacationType": "مرضية", "startDate": "2025-09-25", "endDate": "2025-10-16", "comment": "مرضى 21 يوم "}, {"vacationType": "سنوية", "startDate": "2025-10-16", "endDate": "2025-10-16", "comment": "اجازة عارضة"}], "permissions": []}, "تقى عبدالله": {"vacations": [{"vacationType": "سنوية", "startDate": "2025-01-26", "endDate": "2025-01-26", "comment": ""}, {"vacationType": "سنوية", "startDate": "2025-03-01", "endDate": "2025-03-01", "comment": ""}, {"vacationType": "سنوية", "startDate": "2025-03-13", "endDate": "2025-03-13", "comment": ""}, {"vacationType": "سنوية", "startDate": "2025-03-14", "endDate": "2025-03-14", "comment": ""}, {"vacationType": "سنوية", "startDate": "2025-03-19", "endDate": "2025-03-19", "comment": ""}, {"vacationType": "سنوية", "startDate": "2025-05-22", "endDate": "2025-05-22", "comment": ""}, {"vacationType": "سنوية", "startDate": "2025-09-10", "endDate": "2025-11-09", "comment": ""}], "permissions": []}, "صابرين عبد المقصود": {"vacations": [{"vacationType": "سنوية", "startDate": "2025-09-17", "endDate": "2025-09-17", "comment": ""}, {"vacationType": "سنوية", "startDate": "2025-09-18", "endDate": "2025-09-18", "comment": ""}, {"vacationType": "سنوية", "startDate": "2025-10-08", "endDate": "2025-10-08", "comment": ""}, {"vacationType": "سنوية", "startDate": "2025-10-15", "endDate": "2025-10-15", "comment": ""}], "permissions": []}}};
+
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-app.js";
+  import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore.js";
+
+  const app = initializeApp(firebaseConfig);
+  const db = getFirestore(app);
+
+  async function importOnce() {
+    try {
+      const marker = 'damanhour_import_done_project-5313879905007472742';
+      if (localStorage.getItem(marker)) { console.log('Import skipped: marker present'); return; }
+      if (!EMBEDDED_JSON || !EMBEDDED_JSON.allEmployeeData) { console.log('No embedded data'); return; }
+      console.log('Starting import...');
+      const all = EMBEDDED_JSON.allEmployeeData;
+      for (const [name, obj] of Object.entries(all)) {
+        const vacs = obj.vacations || [];
+        for (const v of vacs) {
+          try {
+            await addDoc(collection(db, 'employees', name, 'vacations'), {
+              vacationType: v.vacationType || '',
+              startDate: v.startDate || '',
+              endDate: v.endDate || '',
+              comment: v.comment || '',
+              createdAt: v.createdAt || new Date().toISOString()
+            });
+          } catch (e) { console.error('Failed vacation', name, e); }
+        }
+        const perms = obj.permissions || [];
+        for (const p of perms) {
+          try {
+            await addDoc(collection(db, 'employees', name, 'permissions'), {
+              permissionDate: p.permissionDate || p.date || '',
+              permissionHours: p.permissionHours || p.hours || 0,
+              comment: p.comment || '',
+              createdAt: p.createdAt || new Date().toISOString()
+            });
+          } catch (e) { console.error('Failed perm', name, e); }
+        }
+      }
+      localStorage.setItem(marker, '1');
+      console.log('Import finished');
+    } catch (err) { console.error('Import error', err); }
+  }
+
+  setTimeout(importOnce, 700);
+</script>
+</body>
+</html>
